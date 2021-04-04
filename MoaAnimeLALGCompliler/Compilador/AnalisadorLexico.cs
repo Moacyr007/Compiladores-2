@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -59,14 +58,14 @@ namespace Compilador
             if (Entrada == string.Empty)
                 return Tokens;
             
-            var tokenArray = Entrada.Split(" ");
+            //var tokenArray = Entrada.Split(new[] {',' , '\n' }, StringSplitOptions.RemoveEmptyEntries);
+            var tokenList = moaSplit(Entrada);
             var linha = 1;
 
-            foreach (var token in tokenArray)
+            foreach (var token in tokenList)
             {
-                if (token == "/n")
+                if (token == "\n")
                     linha++;
-
                 else if (IdentificadoresReservados.ContainsKey(token))
                 {
                     Tokens.Add(new Token(
@@ -133,121 +132,40 @@ namespace Compilador
             return Tokens;
         }
 
-        public List<Token> AnalisarOld()
+        //Retorna uma lista com a entrada separada por ' ', semelhante a string.split mas também separa por '\n' incluindo o '\n' na lista
+        public List<string> moaSplit(string entrada)
         {
-            if (Entrada == string.Empty)
-                return Tokens;
+            List<string> tokenList = new List<string>();
+            var tamanhoEntrada = entrada.Length;
 
-            var finalEntrada = Entrada.Length - 1;
-            var posicaoAtual = 0;
-            var inicioToken = 0;
-            var estado = EstadoAnalisadorLexico.Inicial;
-            var linha = 0;
-
-            while (posicaoAtual < finalEntrada)
+            string tokenAtual = "";
+            for (int i = 0; i < tamanhoEntrada; i++)
             {
-                switch (estado)
+                if (entrada[i] == ' ')
                 {
-                    case EstadoAnalisadorLexico.Inicial:
-                        if (new List<string> {" ", "\n"}.Contains(Entrada[posicaoAtual].ToString()))
-                        {
-                            if (Entrada[posicaoAtual] == '\n')
-                            {
-                                linha++;
-                            }
-
-                            posicaoAtual++;
-                            break;
-                        }
-
-                        if (char.IsLetter(Entrada[posicaoAtual]))
-                            estado = EstadoAnalisadorLexico.Identificador;
-
-                        else if (char.IsNumber(Entrada[posicaoAtual]))
-                            estado = EstadoAnalisadorLexico.Numero;
-
-                        //else if (SimbolosSimples.Contains(Entrada[posicaoAtual].ToString()))
-                        //    estado = EstadoAnalisadorLexico.Simbolo;
-
-                        else
-                            estado = EstadoAnalisadorLexico.Invalido;
-
-                        break;
-                    case EstadoAnalisadorLexico.Invalido:
-                        throw new AnalisadorLexicoException(string.Format("Simbolo inválido: {0} \n Linha: {1}",
-                            Entrada[posicaoAtual], linha));
-
-                    case EstadoAnalisadorLexico.Identificador:
-                        inicioToken = posicaoAtual;
-                        while (posicaoAtual < finalEntrada && (char.IsLetter(Entrada[posicaoAtual]) ||
-                                                               char.IsNumber(Entrada[posicaoAtual])))
-                        {
-                            posicaoAtual++;
-                        }
-
-                        var identificador = Entrada.Substring(inicioToken, posicaoAtual - inicioToken + 1);
-
-                        if (IdentificadoresReservados.ContainsKey(identificador))
-                        {
-                            Tokens.Add(new Token(
-                                identificador,
-                                IdentificadoresReservados[identificador]));
-
-                            estado = EstadoAnalisadorLexico.Inicial;
-
-                            break;
-                        }
-
-
-                        Tokens.Add(new Token(
-                            identificador,
-                            TipoToken.Identificador));
-
-                        estado = EstadoAnalisadorLexico.Inicial;
-                        break;
-                    case EstadoAnalisadorLexico.Numero:
-                        inicioToken = posicaoAtual;
-                        while (posicaoAtual < finalEntrada && char.IsNumber(Entrada[posicaoAtual]))
-                            posicaoAtual++;
-
-                        if (posicaoAtual < finalEntrada && Entrada[posicaoAtual] == '.')
-                        {
-                            posicaoAtual++;
-                            if (posicaoAtual < finalEntrada && char.IsNumber(Entrada[posicaoAtual]))
-                            {
-                                while (posicaoAtual < finalEntrada && char.IsNumber(Entrada[posicaoAtual]))
-                                    posicaoAtual++;
-
-                                Tokens.Add(new Token(
-                                    Entrada.Substring(inicioToken, posicaoAtual - inicioToken),
-                                    TipoToken.NumeroReal));
-
-                                inicioToken = posicaoAtual;
-                                estado = EstadoAnalisadorLexico.Inicial;
-                                break;
-                            }
-
-                            throw new AnalisadorLexicoException(Entrada[posicaoAtual], linha);
-                        }
-
-                        Tokens.Add(new Token(
-                            Entrada.Substring(inicioToken, posicaoAtual - inicioToken),
-                            TipoToken.NumeroInteiro));
-
-                        inicioToken = posicaoAtual;
-                        estado = EstadoAnalisadorLexico.Inicial;
-                        break;
-
-                    case EstadoAnalisadorLexico.Desconhecido:
-                        break;
-                    case EstadoAnalisadorLexico.Simbolo:
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException();
+                    if(!string.IsNullOrEmpty(tokenAtual))
+                        tokenList.Add(tokenAtual);
+                    tokenAtual = "";
+                    continue;
                 }
+                if (entrada[i] == '\n')
+                {
+                    if(!string.IsNullOrEmpty(tokenAtual))
+                        tokenList.Add(tokenAtual);
+                    
+                    tokenAtual = "";
+                    tokenList.Add("\n");
+                    
+                    continue;
+                }
+                tokenAtual += entrada[i];
             }
+            
+            if(!string.IsNullOrEmpty(tokenAtual))
+                tokenList.Add(tokenAtual);
 
-            return Tokens;
+            return tokenList;
+
         }
     }
 }

@@ -33,7 +33,7 @@ namespace Testes
             var tokens = analisadorLexico.Analisar();
 
             //Assert
-            tokens.Should().Equal(new List<Token>() {new Token("teste", Identificador)});
+            tokens.Should().Equal(new List<Token>() {new Token("teste", Identificador, 1)});
         }
 
         [Fact]
@@ -46,7 +46,7 @@ namespace Testes
             var tokens = analisadorLexico.Analisar();
 
             //Assert
-            tokens.Should().Equal(new List<Token>() {new Token("if", ReservadoIf), new Token("teste", Identificador)});
+            tokens.Should().Equal(new List<Token>() {new Token("if", ReservadoIf, 1), new Token("teste", Identificador, 1)});
         }
 
         [Fact]

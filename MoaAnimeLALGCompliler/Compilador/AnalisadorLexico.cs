@@ -59,52 +59,54 @@ namespace Compilador
                 return Tokens;
             
             //var tokenArray = Entrada.Split(new[] {',' , '\n' }, StringSplitOptions.RemoveEmptyEntries);
-            var tokenList = moaSplit(Entrada);
-            var linha = 1;
+            var tokenList = SepararTokens(Entrada);
 
             foreach (var token in tokenList)
             {
-                if (token == "\n")
-                    linha++;
-                else if (IdentificadoresReservados.ContainsKey(token))
+                if (IdentificadoresReservados.ContainsKey(token.Valor))
                 {
                     Tokens.Add(new Token(
-                        token,
-                        IdentificadoresReservados[token]));
+                        token.Valor,
+                        IdentificadoresReservados[token.Valor], 
+                        token.Linha));
                 }
 
-                else if (Simbolos.ContainsKey(token))
+                else if (Simbolos.ContainsKey(token.Valor))
                 {
                     Tokens.Add(new Token(
-                        token,
-                        IdentificadoresReservados[token]));
+                        token.Valor,
+                        IdentificadoresReservados[token.Valor],
+                        token.Linha));
                 }
 
-                else if (Operadores.ContainsKey(token))
+                else if (Operadores.ContainsKey(token.Valor))
                 {
                     Tokens.Add(new Token(
-                        token,
-                        Operadores[token]));
+                        token.Valor,
+                        Operadores[token.Valor],
+                        token.Linha));
                 }
 
-                else if (int.TryParse(token, out _))
+                else if (int.TryParse(token.Valor, out _))
                 {
                     Tokens.Add(new Token(
-                        token,
-                        TipoToken.NumeroInteiro));
+                        token.Valor,
+                        TipoToken.NumeroInteiro,
+                        token.Linha));
                 }
 
-                else if (float.TryParse(token, out _))
+                else if (float.TryParse(token.Valor, out _))
                 {
                     Tokens.Add(new Token(
-                        token,
-                        TipoToken.NumeroInteiro));
+                        token.Valor,
+                        TipoToken.NumeroInteiro,
+                        token.Linha));
                 }
 
-                else if (char.IsLetter(token[0]))
+                else if (char.IsLetter(token.Valor[0]))
                 {
                     var flagIdentificadorEhInvalido = false;
-                    foreach (var caractere in token)
+                    foreach (var caractere in token.Valor)
                     {
                         if (!char.IsNumber(caractere) && !char.IsLetter(caractere))
                         {
@@ -115,17 +117,18 @@ namespace Compilador
 
                     if (flagIdentificadorEhInvalido)
                     {
-                        throw new AnalisadorLexicoException($"Identificador inválido: {token} \n Linha: {linha}");
+                        throw new AnalisadorLexicoException($"Identificador inválido: {token.Valor} \n Linha: {token.Linha}");
                     }
 
                     Tokens.Add(new Token(
-                        token,
-                        TipoToken.Identificador));
+                        token.Valor,
+                        TipoToken.Identificador,
+                        token.Linha));
                 }
 
                 else
                 {
-                    throw new AnalisadorLexicoException($"Identificador inválido: {token} \n Linha: {linha}");
+                    throw new AnalisadorLexicoException($"Identificador inválido: {token.Valor} \n Linha: {token.Linha}");
                 }
             }
 
@@ -133,36 +136,37 @@ namespace Compilador
         }
 
         //Retorna uma lista com a entrada separada por ' ', semelhante a string.split mas também separa por '\n' incluindo o '\n' na lista
-        public List<string> moaSplit(string entrada)
+        public static List<Token> SepararTokens(string entrada)
         {
-            List<string> tokenList = new List<string>();
+            List<Token> tokenList = new List<Token>();
             var tamanhoEntrada = entrada.Length;
-
-            string tokenAtual = "";
+            int linha = 1;
+            string tokenAtualValor = "";
+            
             for (int i = 0; i < tamanhoEntrada; i++)
             {
                 if (entrada[i] == ' ')
                 {
-                    if(!string.IsNullOrEmpty(tokenAtual))
-                        tokenList.Add(tokenAtual);
-                    tokenAtual = "";
+                    if(!string.IsNullOrEmpty(tokenAtualValor))
+                        tokenList.Add(new Token(tokenAtualValor, TipoToken.Desconhecido, linha));
+                    tokenAtualValor = "";
                     continue;
                 }
                 if (entrada[i] == '\n')
                 {
-                    if(!string.IsNullOrEmpty(tokenAtual))
-                        tokenList.Add(tokenAtual);
-                    
-                    tokenAtual = "";
-                    tokenList.Add("\n");
+                    if(!string.IsNullOrEmpty(tokenAtualValor))
+                        tokenList.Add(new Token(tokenAtualValor, TipoToken.Desconhecido, linha));
+
+                    linha++;
+                    tokenAtualValor = "";
                     
                     continue;
                 }
-                tokenAtual += entrada[i];
+                tokenAtualValor += entrada[i];
             }
             
-            if(!string.IsNullOrEmpty(tokenAtual))
-                tokenList.Add(tokenAtual);
+            if(!string.IsNullOrEmpty(tokenAtualValor))
+                tokenList.Add(new Token(tokenAtualValor, TipoToken.Desconhecido, linha));
 
             return tokenList;
 

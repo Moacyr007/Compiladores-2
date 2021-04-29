@@ -59,7 +59,7 @@ namespace Testes
             Action analisar = () => analisadorLexico.Analisar();
 
             //Assert
-            analisar.Should().Throw<AnalisadorLexicoException>()
+            analisar.Should().Throw<CompiladorException>()
                 .WithMessage("Identificador Inválido: 13212dasd \n Linha: 1");
         }
         
@@ -75,7 +75,7 @@ namespace Testes
             Action analisar = () => analisadorLexico.Analisar();
 
             //Assert
-            analisar.Should().Throw<AnalisadorLexicoException>()
+            analisar.Should().Throw<CompiladorException>()
                 .WithMessage("Identificador Inválido: 123abc \n Linha: 2");
         }
 

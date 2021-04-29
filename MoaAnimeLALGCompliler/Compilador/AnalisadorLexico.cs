@@ -28,7 +28,16 @@ namespace Compilador
             {"do", TipoToken.ReservadoDo},
             {"numero_int", TipoToken.ReservadoNumeroInt},
             {"numero_real", TipoToken.ReservadoNumeroReal},
-            {"ident", TipoToken.DeclaracaoIdentificador}
+            {"ident", TipoToken.ReservadoIdent},
+            {"program", TipoToken.ReservadoProgram},
+            {"begin", TipoToken.ReservadoBegin},
+            {"end", TipoToken.ReservadoEnd},
+            {"var", TipoToken.ReservadoVar},
+            {"procedure", TipoToken.ReservadoProcedure},
+            {"real", TipoToken.ReservadoReal},
+            {"integer", TipoToken.ReservadoInteger},
+            {"read", TipoToken.ReservadoRead},
+            {"white", TipoToken.ReservadoWrite},
         };
 
         public Dictionary<string, TipoToken> Operadores = new Dictionary<string, TipoToken>()
@@ -41,13 +50,18 @@ namespace Compilador
             {"<", TipoToken.OperadorComparacao},
             {"<>", TipoToken.OperadorComparacao},
             {">=", TipoToken.OperadorComparacao},
+            {"=", TipoToken.OperadorIgual},
         };
 
         public Dictionary<string, TipoToken> Simbolos = new Dictionary<string, TipoToken>()
         {
             {"$", TipoToken.SimboloCifrao},
-            {"(", TipoToken.AbreParenteses},
-            {")", TipoToken.FechaParenteses},
+            {"(", TipoToken.SimboloAbreParenteses},
+            {")", TipoToken.SimboloFechaParenteses},
+            {",", TipoToken.SimboloVirgula},
+            {";", TipoToken.SimboloPontoEVirgula},
+            {":", TipoToken.SimboloDoisPontos},
+            {":=", TipoToken.SimboloAtribuicao},
         };
 
         //Glalg = {N,T,P,S} 
@@ -117,7 +131,7 @@ namespace Compilador
 
                     if (flagIdentificadorEhInvalido)
                     {
-                        throw new AnalisadorLexicoException($"Identificador inválido: {token.Valor} \n Linha: {token.Linha}");
+                        throw new CompiladorException($"Identificador inválido: {token.Valor} \n Linha: {token.Linha}");
                     }
 
                     Tokens.Add(new Token(
@@ -128,7 +142,7 @@ namespace Compilador
 
                 else
                 {
-                    throw new AnalisadorLexicoException($"Identificador inválido: {token.Valor} \n Linha: {token.Linha}");
+                    throw new CompiladorException($"Identificador inválido: {token.Valor} \n Linha: {token.Linha}");
                 }
             }
 

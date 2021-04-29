@@ -8,8 +8,8 @@
         Desconhecido = 0,
         
         Identificador = 1,
-        AbreParenteses = 4,
-        FechaParenteses = 5,
+        SimboloAbreParenteses = 4,
+        SimboloFechaParenteses = 5,
         OperadorMultiplicacao = 6,
         OperadorDivisao = 7,
         OperadorSoma = 8,
@@ -25,6 +25,20 @@
         ReservadoNumeroInt = 18,
         ReservadoNumeroReal = 19,
         SimboloCifrao = 20,
-        DeclaracaoIdentificador = 21
+        ReservadoIdent = 21,
+        ReservadoProgram = 22,
+        ReservadoBegin = 23,
+        ReservadoEnd = 23,
+        ReservadoVar = 24,
+        ReservadoProcedure = 25,
+        ReservadoReal = 26,
+        ReservadoInteger = 27,
+        SimboloVirgula = 28,
+        SimboloPontoEVirgula = 29,
+        SimboloDoisPontos = 30,
+        OperadorIgual = 31,
+        ReservadoRead = 32,
+        ReservadoWrite = 33,
+        SimboloAtribuicao = 34
     }
 }

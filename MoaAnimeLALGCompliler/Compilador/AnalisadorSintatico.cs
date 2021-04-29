@@ -24,7 +24,7 @@ namespace Compilador
             return IndexAtual <= UltimoIdex;
         }
 
-        public void Iniciar()
+        public void Analisar()
         {
             try
             {

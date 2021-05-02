@@ -46,7 +46,7 @@ namespace Compilador
 
             IndexAtual++;
 
-            if (Tokens[IndexAtual].Tipo != TipoToken.ReservadoIdent)
+            if (Tokens[IndexAtual].Tipo != TipoToken.Identificador)
                 ThrowCompiladorException(Tokens[IndexAtual]);
 
             IndexAtual++;
@@ -94,7 +94,7 @@ namespace Compilador
             if (Tokens[IndexAtual].Tipo == TipoToken.ReservadoProcedure)
             {
                 IndexAtual++;
-                if (Tokens[IndexAtual].Tipo == TipoToken.ReservadoIdent)
+                if (Tokens[IndexAtual].Tipo == TipoToken.Identificador)
                 {
                     IndexAtual++;
                     Parametros();
@@ -195,7 +195,7 @@ namespace Compilador
 
         private void Argumentos()
         {
-            if (Tokens[IndexAtual].Tipo == TipoToken.ReservadoIdent)
+            if (Tokens[IndexAtual].Tipo == TipoToken.Identificador)
             {
                 IndexAtual++;
                 MaisIdent();
@@ -228,7 +228,7 @@ namespace Compilador
 
         private void Variaveis()
         {
-            if (Tokens[IndexAtual].Tipo == TipoToken.ReservadoIdent)
+            if (Tokens[IndexAtual].Tipo == TipoToken.Identificador)
             {
                 IndexAtual++;
                 MaisVar();
@@ -369,7 +369,7 @@ namespace Compilador
 
                     break;
 
-                case TipoToken.ReservadoIdent:
+                case TipoToken.Identificador:
                     IndexAtual++;
                     RestoIdent();
                     break;
@@ -474,7 +474,7 @@ namespace Compilador
         {
             switch (Tokens[IndexAtual].Tipo)
             {
-                case TipoToken.ReservadoIdent:
+                case TipoToken.Identificador:
                     break;
                 case TipoToken.ReservadoNumeroInt:
                     break;

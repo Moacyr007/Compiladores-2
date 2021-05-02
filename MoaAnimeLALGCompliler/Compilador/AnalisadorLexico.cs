@@ -64,6 +64,9 @@ namespace Compilador
             {";", TipoToken.SimboloPontoEVirgula},
             {":", TipoToken.SimboloDoisPontos},
             {":=", TipoToken.SimboloAtribuicao},
+            {"{", TipoToken.SimboloAbreChaves},
+            {"}", TipoToken.SimboloFechaChaves},
+            {".", TipoToken.SimboloPonto},
         };
 
         //Glalg = {N,T,P,S} 
@@ -91,7 +94,7 @@ namespace Compilador
                 {
                     Tokens.Add(new Token(
                         token.Valor,
-                        IdentificadoresReservados[token.Valor],
+                        Simbolos[token.Valor],
                         token.Linha));
                 }
 
@@ -159,6 +162,7 @@ namespace Compilador
             int linha = 1;
             string tokenAtualValor = "";
             bool lendoComentario = false;
+            bool lendoComentarioChaves = false;
             var i = 0;
             while(i < tamanhoEntrada)
             {
@@ -172,7 +176,14 @@ namespace Compilador
                     continue;
                 }
                 
-                if (lendoComentario)
+                if (entrada[i] == '}')
+                {
+                    i++;
+                    lendoComentarioChaves = false;
+                    continue;
+                }
+                
+                if (lendoComentario || lendoComentarioChaves)
                 {
                     i++;
                     continue;
@@ -183,6 +194,13 @@ namespace Compilador
                     i++;
                     lendoComentario = true;   
                     
+                    continue;
+                }
+                
+                if (entrada[i] == '{')
+                {
+                    i++;
+                    lendoComentarioChaves = true;
                     continue;
                 }
 

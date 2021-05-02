@@ -39,6 +39,9 @@
         OperadorIgual = 31,
         ReservadoRead = 32,
         ReservadoWrite = 33,
-        SimboloAtribuicao = 34
+        SimboloAtribuicao = 34,
+        SimboloAbreChaves = 35,
+        SimboloFechaChaves = 36,
+        SimboloPonto = 37
     }
 }

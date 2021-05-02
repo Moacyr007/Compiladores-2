@@ -19,6 +19,8 @@ namespace Compilador
             Tokens = new List<Token>();
         }
 
+        private List<string> SimbolosDuplos = new List<string>() {":=", "<>", "<=", ">=", "*/", "/*"};
+        
         public Dictionary<string, TipoToken> IdentificadoresReservados = new Dictionary<string, TipoToken>()
         {
             {"if", TipoToken.ReservadoIf},
@@ -150,22 +152,61 @@ namespace Compilador
         }
 
         //Retorna uma lista com a entrada separada por ' ', semelhante a string.split mas também separa por '\n' incluindo o '\n' na lista
-        public static List<Token> SepararTokens(string entrada)
+        public List<Token> SepararTokens(string entrada)
         {
             List<Token> tokenList = new List<Token>();
-            var tamanhoEntrada = entrada.Length;
+            var tamanhoEntrada = entrada.Length -1;
             int linha = 1;
             string tokenAtualValor = "";
-            
-            for (int i = 0; i < tamanhoEntrada; i++)
+            bool lendoComentario = false;
+            var i = 0;
+            while(i < tamanhoEntrada)
             {
-                if (entrada[i] == ' ')
+                i++;
+
+                if (i+1 < tamanhoEntrada && entrada[i] == '*' && entrada[i+1] == '/')
+                {
+                    i++;
+                    lendoComentario = false;
+                    
+                    continue;
+                }
+                
+                if (lendoComentario)
+                {
+                    i++;
+                    continue;
+                }
+                
+                if (i+1 < tamanhoEntrada && entrada[i] == '/' && entrada[i+1] == '*')
+                {
+                    i++;
+                    lendoComentario = true;   
+                    
+                    continue;
+                }
+
+                if (i+1 < tamanhoEntrada && SimbolosDuplos.Contains(string.Concat(entrada[i], entrada[i+1])))
+                {
+                    if(!string.IsNullOrEmpty(tokenAtualValor))
+                        tokenList.Add(new Token(tokenAtualValor, TipoToken.Desconhecido, linha));
+                    
+                    tokenAtualValor = string.Concat(entrada[i], entrada[i+1]);
+                    tokenList.Add(new Token(tokenAtualValor, TipoToken.Desconhecido, linha));
+                    
+                    tokenAtualValor = "";
+                    
+                    continue;
+                }
+                
+                if (entrada[i] == ' ' || entrada[i] == '\r')
                 {
                     if(!string.IsNullOrEmpty(tokenAtualValor))
                         tokenList.Add(new Token(tokenAtualValor, TipoToken.Desconhecido, linha));
                     tokenAtualValor = "";
                     continue;
                 }
+                
                 if (entrada[i] == '\n')
                 {
                     if(!string.IsNullOrEmpty(tokenAtualValor))
@@ -176,6 +217,19 @@ namespace Compilador
                     
                     continue;
                 }
+                
+                if (!char.IsDigit(entrada[i]) && !char.IsLetter(entrada[i]))
+                {
+                    if(!string.IsNullOrEmpty(tokenAtualValor))
+                        tokenList.Add(new Token(tokenAtualValor, TipoToken.Desconhecido, linha));
+
+                    tokenAtualValor = entrada[i].ToString();
+                    tokenList.Add(new Token(tokenAtualValor, TipoToken.Desconhecido, linha));
+                    tokenAtualValor = "";
+                    
+                    continue;
+                }
+                
                 tokenAtualValor += entrada[i];
             }
             

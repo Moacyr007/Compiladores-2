@@ -46,7 +46,8 @@ namespace Testes
             var tokens = analisadorLexico.Analisar();
 
             //Assert
-            tokens.Should().Equal(new List<Token>() {new Token("if", ReservadoIf, 1), new Token("teste", Identificador, 1)});
+            tokens.Should().Equal(new List<Token>()
+                {new Token("if", ReservadoIf, 1), new Token("teste", Identificador, 1)});
         }
 
         [Fact]
@@ -62,7 +63,7 @@ namespace Testes
             analisar.Should().Throw<CompiladorException>()
                 .WithMessage("Identificador Inválido: 13212dasd \n Linha: 1");
         }
-        
+
         [Fact]
         public void Entrada_Identificador_Invalido_Linha2()
         {
@@ -70,7 +71,7 @@ namespace Testes
             System.IO.File.WriteAllText("entrada.txt", "if numero > 1\n123abc");
             var textoArquivo = System.IO.File.ReadAllText("entrada.txt");
             var analisadorLexico = new AnalisadorLexico(textoArquivo);
-            
+
             //Act
             Action analisar = () => analisadorLexico.Analisar();
 
@@ -79,56 +80,12 @@ namespace Testes
                 .WithMessage("Identificador Inválido: 123abc \n Linha: 2");
         }
 
-        /*[Fact]
+/*
+        [Fact]
         public void Entrada_Lslg_Correto()
         {
             //Arrange
-            var analisadorLexico = new AnalisadorLexico(@"program teste
-
-                /* declaracao de variaveis #1#
-                var a,b,c: integer;
-                var d,e,f: real;
-                var g,h : integer;
-
-                /* declaracao de procedimentos #1#
-                procedure um (a, g: real; d, c: integer)
-                  var h, i, j: real;
-                  var l: integer
-                begin
-                  h := 2.0;
-                  a := g + 3.4 / h;
-                  l := c - d * 2;
-                  if (c+d)>=5 then
-                    write(a)
-                  else
-                    write(l)
-                  $
-                end;
-
-                procedure dois (j: integer; k: real; l: integer)
-                  var cont,quant: integer
-                begin
-                  read(quant);
-                  while cont <= quant do
-                     write(cont)
-                  $;
-                  l := l + j + cont;
-                  write(k);
-                  write(l)
-                end
-
-                /*  corpo * principal / #1#
-
-                begin
-                read(e); {real}
-                read(f); {real}
-                read(g); {inteiro}
-                read(h); { inteiro} 
-                d := e/f; {real}
-                dois(h;d;h);
-                um(f;e;g;h)         {real,real,inteiro,inteiro}
-                {aqui termina o programa}
-                end.");
+            var analisadorLexico = new AnalisadorLexico(Helper.GetExemploCorretoLalg());
 
             //Act
             Action analisar = () => analisadorLexico.Analisar();

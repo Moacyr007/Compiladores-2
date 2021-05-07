@@ -82,50 +82,50 @@ namespace Compilador
 
             foreach (var token in tokenList)
             {
-                if (IdentificadoresReservados.ContainsKey(token.Valor))
+                if (IdentificadoresReservados.ContainsKey(token.Cadeia))
                 {
                     Tokens.Add(new Token(
-                        token.Valor,
-                        IdentificadoresReservados[token.Valor], 
+                        token.Cadeia,
+                        IdentificadoresReservados[token.Cadeia], 
                         token.Linha));
                 }
 
-                else if (Simbolos.ContainsKey(token.Valor))
+                else if (Simbolos.ContainsKey(token.Cadeia))
                 {
                     Tokens.Add(new Token(
-                        token.Valor,
-                        Simbolos[token.Valor],
+                        token.Cadeia,
+                        Simbolos[token.Cadeia],
                         token.Linha));
                 }
 
-                else if (Operadores.ContainsKey(token.Valor))
+                else if (Operadores.ContainsKey(token.Cadeia))
                 {
                     Tokens.Add(new Token(
-                        token.Valor,
-                        Operadores[token.Valor],
+                        token.Cadeia,
+                        Operadores[token.Cadeia],
                         token.Linha));
                 }
 
-                else if (int.TryParse(token.Valor, out _))
+                else if (int.TryParse(token.Cadeia, out _))
                 {
                     Tokens.Add(new Token(
-                        token.Valor,
+                        token.Cadeia,
                         TipoToken.NumeroInteiro,
                         token.Linha));
                 }
 
-                else if (float.TryParse(token.Valor, out _))
+                else if (float.TryParse(token.Cadeia, out _))
                 {
                     Tokens.Add(new Token(
-                        token.Valor,
+                        token.Cadeia,
                         TipoToken.NumeroInteiro,
                         token.Linha));
                 }
 
-                else if (char.IsLetter(token.Valor[0]))
+                else if (char.IsLetter(token.Cadeia[0]))
                 {
                     var flagIdentificadorEhInvalido = false;
-                    foreach (var caractere in token.Valor)
+                    foreach (var caractere in token.Cadeia)
                     {
                         if (!char.IsNumber(caractere) && !char.IsLetter(caractere))
                         {
@@ -136,18 +136,18 @@ namespace Compilador
 
                     if (flagIdentificadorEhInvalido)
                     {
-                        throw new CompiladorException($"Identificador inválido: {token.Valor} \n Linha: {token.Linha}");
+                        throw new CompiladorException($"Identificador inválido: {token.Cadeia} \n Linha: {token.Linha}");
                     }
 
                     Tokens.Add(new Token(
-                        token.Valor,
+                        token.Cadeia,
                         TipoToken.Identificador,
                         token.Linha));
                 }
 
                 else
                 {
-                    throw new CompiladorException($"Identificador inválido: {token.Valor} \n Linha: {token.Linha}");
+                    throw new CompiladorException($"Identificador inválido: {token.Cadeia} \n Linha: {token.Linha}");
                 }
             }
 

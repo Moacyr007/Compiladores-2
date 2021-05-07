@@ -8,15 +8,17 @@ namespace Compilador
         public List<Token> Tokens { get; set; }
         public int UltimoIdex { get; set; }
         public int IndexAtual { get; set; }
+        public TabelaDeSimbolos TabelaDeSimbolos { get; set; }
 
         public AnalisadorSintatico(List<Token> tokens)
         {
             Tokens = tokens;
+            TabelaDeSimbolos = new TabelaDeSimbolos();
         }
 
         private void ThrowCompiladorException(Token token)
         {
-            throw new CompiladorException(token.Valor, token.Linha, this.GetType().Name);
+            throw new CompiladorException(token.Cadeia, token.Linha, this.GetType().Name);
         }
 
         private bool IndexInRange()
@@ -230,6 +232,7 @@ namespace Compilador
         {
             if (Tokens[IndexAtual].Tipo == TipoToken.Identificador)
             {
+                TabelaDeSimbolos.TryAdd(new Simbolo(){Cadeia = Tokens[IndexAtual].Cadeia, Escopo = 0, Tipo = Tokens[IndexAtual].Tipo});
                 IndexAtual++;
                 MaisVar();
             }

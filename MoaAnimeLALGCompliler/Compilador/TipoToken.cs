@@ -2,9 +2,6 @@
 {
     public enum TipoToken
     {
-        //T = {ident, numero_int, numero_real, (, ), *, /, +, -, <>, >=, >, <, if, then, $, while, do,
-        //write, read, ;, else, begin, end, :, , , }
-
         Desconhecido = 0,
         
         Identificador = 1,

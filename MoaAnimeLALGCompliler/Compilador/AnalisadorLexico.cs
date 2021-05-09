@@ -210,7 +210,7 @@ namespace Compilador
                     tokenList.Add(new Token(tokenAtualValor, TipoToken.Desconhecido, linha));
                     
                     tokenAtualValor = "";
-                    i+=1;
+                    i+=2;
                     continue;
                 }
                 
@@ -231,6 +231,49 @@ namespace Compilador
                     linha++;
                     tokenAtualValor = "";
                     i++;
+                    continue;
+                }
+
+                //Adicionar identificador
+                if (char.IsLetter(entrada[i]))
+                {
+                    tokenAtualValor += entrada[i];
+                    i++;
+                    while (char.IsLetter(entrada[i]) || char.IsNumber(entrada[i]))
+                    {
+                        tokenAtualValor += entrada[i];
+                        i++;
+                    }
+                    tokenList.Add(new Token(tokenAtualValor, TipoToken.Desconhecido, linha));
+                    tokenAtualValor = "";
+                    continue;
+                }
+                
+                //Adicionar numero
+                if (char.IsNumber(entrada[i]))
+                {
+                    tokenAtualValor += entrada[i];
+                    i++;
+                    
+                    while (char.IsNumber(entrada[i]))
+                    {
+                        tokenAtualValor += entrada[i];
+                        i++;
+                    }
+
+                    if (entrada[i].ToString() == ".")
+                    {
+                        tokenAtualValor += entrada[i];
+                        i++;
+                        while (char.IsNumber(entrada[i]))
+                        {
+                            tokenAtualValor += entrada[i];
+                            i++;
+                        }
+                    }
+                    
+                    tokenList.Add(new Token(tokenAtualValor, TipoToken.Desconhecido, linha));
+                    tokenAtualValor = "";
                     continue;
                 }
                 

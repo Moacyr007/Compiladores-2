@@ -19,17 +19,24 @@ namespace Compilador
             return Simbolos[cadeia];
         }
 
-        public bool TryAdd(Simbolo simbolo)
+        public void AddNovaVariavel(Simbolo simbolo)
         {
+            //Verifica se a variaveil já está na tabela de simbolos
             if (Simbolos.Any(x => x.Key == simbolo.Cadeia))
             {
-                //throw new CompiladorException($"O simbolo {simbolo.Cadeia} já está na tabela de simbolos");
-                return false;
+                throw new CompiladorException($"A variável {simbolo.Cadeia} já foi declarada");
             }
 
             Simbolos.Add(simbolo.Cadeia,simbolo);
+        }
 
-            return true;
+
+        public void VerificarSeVariavelJaFoiDeclarada(Simbolo simbolo)
+        {
+            if (Simbolos.All(x => x.Key != simbolo.Cadeia))
+            {
+                throw new CompiladorException($"A variável {simbolo.Cadeia} já foi declarada");
+            }
         }
         
         //TODO
@@ -43,6 +50,7 @@ namespace Compilador
 
     public enum TipoItemTs
     {
+        Desconhecido,
         NumeroInteiro,
         NumeroReal,
         Procedimento
@@ -50,24 +58,12 @@ namespace Compilador
 
     public class Simbolo
     {
-        public Simbolo(string cadeia, int escopo, TipoToken tipoToken)
+        /*public Simbolo(string cadeia, int escopo, TipoItemTs tipoItemTs)
         {
             Cadeia = cadeia;
             Escopo = escopo;
-            
-            switch(tipoToken)
-            {
-               
-                case TipoToken.NumeroInteiro:
-                    break;
-                case TipoToken.NumeroReal:
-                    break;
-               
-                
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(tipoToken), tipoToken, null);
-            }
-        }
+            Tipo = tipoItemTs;
+        }*/
         public string Cadeia { get; set; }
         public int Escopo { get; set; }
         public TipoItemTs Tipo { get; set; }

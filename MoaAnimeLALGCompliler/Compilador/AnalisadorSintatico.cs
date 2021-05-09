@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace Compilador
 {
@@ -8,22 +9,22 @@ namespace Compilador
         public List<Token> Tokens { get; set; }
         public int UltimoIdex { get; set; }
         public int IndexAtual { get; set; }
+        public int EscopoAtual { get; set; }
         public TabelaDeSimbolos TabelaDeSimbolos { get; set; }
+        public StackTrace StackTrace { get; set; }
 
         public AnalisadorSintatico(List<Token> tokens)
         {
             Tokens = tokens;
             TabelaDeSimbolos = new TabelaDeSimbolos();
+
+            StackTrace = new StackTrace();
+
         }
 
         private void ThrowCompiladorException(Token token)
         {
             throw new CompiladorException(token.Cadeia, token.Linha, this.GetType().Name);
-        }
-
-        private bool IndexInRange()
-        {
-            return IndexAtual <= UltimoIdex;
         }
 
         public void Analisar()
@@ -37,7 +38,9 @@ namespace Compilador
                 ThrowCompiladorException(Tokens[UltimoIdex]);
             }
         }
-        
+
+        #region AnalisadorSintatico
+
         private void Programa()
         {
             UltimoIdex = Tokens.Count - 1;
@@ -232,7 +235,8 @@ namespace Compilador
         {
             if (Tokens[IndexAtual].Tipo == TipoToken.Identificador)
             {
-                TabelaDeSimbolos.TryAdd(new Simbolo(){Cadeia = Tokens[IndexAtual].Cadeia, Escopo = 0, Tipo = Tokens[IndexAtual].Tipo});
+
+                ValidarDeclaracaoVariavel();
                 IndexAtual++;
                 MaisVar();
             }
@@ -241,7 +245,7 @@ namespace Compilador
                 ThrowCompiladorException(Tokens[IndexAtual]);
             }
         }
-
+        
         private void MaisVar()
         {
             if (Tokens[IndexAtual].Tipo == TipoToken.SimboloVirgula)
@@ -495,5 +499,81 @@ namespace Compilador
                     break;
             }
         }
+        #endregion
+        #region Helpers
+
+        private bool IndexInRange()
+        {
+            return IndexAtual <= UltimoIdex;
+        }
+        
+        public TipoItemTs GetTipoItemTs()
+        {
+            var tipoItemTs = Compilador.TipoItemTs.Desconhecido;
+            if (Tokens[IndexAtual - 1].Tipo == TipoToken.ReservadoProcedure)
+            {
+                tipoItemTs = Compilador.TipoItemTs.Procedimento;
+            }
+            else if (Tokens[IndexAtual].Tipo == TipoToken.NumeroReal)
+            {
+                tipoItemTs = Compilador.TipoItemTs.NumeroReal;
+            }
+            else if (Tokens[IndexAtual].Tipo == TipoToken.NumeroInteiro)
+            {
+                tipoItemTs = Compilador.TipoItemTs.NumeroInteiro;
+            }
+            else
+            {
+                //TODO ver mensagem pro erro
+                throw new CompiladorException();
+            }
+
+            return tipoItemTs;
+        }
+        
+        private void ValidarDeclaracaoVariavel()
+        {
+            var callerName = StackTrace.GetFrame(2)?.GetMethod()?.Name;
+
+            switch (callerName)
+            {
+                //Declaracao variaveis
+                case nameof(DcV):
+                    break;
+                case nameof(MaisVar):
+                    break;
+                //Parametro
+                case nameof(ListaPar):
+                    break;
+                case nameof(Comando):
+                    break;
+            }
+
+            if (string.IsNullOrEmpty(callerName))
+                throw new CompiladorException("Erro ao obter CallerMethod from StackTrace");
+            var i = IndexAtual;
+            var isDeclacarcao = true;
+            while (Tokens[i].Tipo != TipoToken.ReservadoVar)
+            {
+                if (Tokens[i].Tipo == TipoToken.Identificador || Tokens[i].Tipo == TipoToken.SimboloVirgula)
+                    i--;
+                else
+                {
+                    isDeclacarcao = false;
+                }
+            }
+
+            if (isDeclacarcao)
+            {
+                TabelaDeSimbolos.AddNovaVariavel(new Simbolo
+                    {Cadeia = Tokens[IndexAtual].Cadeia, Escopo = EscopoAtual, Tipo = GetTipoItemTs()});
+            }
+            else
+            {
+                TabelaDeSimbolos.VerificarSeVariavelJaFoiDeclarada(new Simbolo
+                    {Cadeia = Tokens[IndexAtual].Cadeia, Escopo = EscopoAtual, Tipo = TipoItemTs.Desconhecido});
+            }
+        }
+        #endregion
     }
 }

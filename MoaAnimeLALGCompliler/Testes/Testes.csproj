@@ -24,4 +24,10 @@
       <ProjectReference Include="..\Compilador\Compilador.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <None Update="EntradaCorreta.txt">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+    </ItemGroup>
+
 </Project>

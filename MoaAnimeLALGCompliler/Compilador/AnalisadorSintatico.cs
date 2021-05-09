@@ -533,10 +533,8 @@ namespace Compilador
 
         private void ValidarDeclaracaoVariavel()
         {
-            var callerName = StackTrace.GetFrame(2)?.GetMethod()?.Name;
-
-            if (string.IsNullOrEmpty(callerName))
-                throw new CompiladorException("Erro ao obter CallerMethod from StackTrace");
+            // ReSharper disable once PossibleNullReferenceException
+            var callerName = StackTrace.GetFrame(2).GetMethod().Name;
 
             switch (callerName)
             {
@@ -563,6 +561,4 @@ namespace Compilador
     }
 
     #endregion
-}
-
 }

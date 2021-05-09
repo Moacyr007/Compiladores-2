@@ -77,7 +77,6 @@ namespace Compilador
             if (Entrada == string.Empty)
                 return Tokens;
             
-            //var tokenArray = Entrada.Split(new[] {',' , '\n' }, StringSplitOptions.RemoveEmptyEntries);
             var tokenList = SepararTokens(Entrada);
 
             foreach (var token in tokenList)
@@ -166,11 +165,9 @@ namespace Compilador
             var i = 0;
             while(i < tamanhoEntrada)
             {
-                i++;
-
                 if (i+1 < tamanhoEntrada && entrada[i] == '*' && entrada[i+1] == '/')
                 {
-                    i++;
+                    i+=2;
                     lendoComentario = false;
                     
                     continue;
@@ -178,8 +175,8 @@ namespace Compilador
                 
                 if (entrada[i] == '}')
                 {
-                    i++;
                     lendoComentarioChaves = false;
+                    i++;
                     continue;
                 }
                 
@@ -191,7 +188,7 @@ namespace Compilador
                 
                 if (i+1 < tamanhoEntrada && entrada[i] == '/' && entrada[i+1] == '*')
                 {
-                    i++;
+                    i+=2;
                     lendoComentario = true;   
                     
                     continue;
@@ -213,7 +210,7 @@ namespace Compilador
                     tokenList.Add(new Token(tokenAtualValor, TipoToken.Desconhecido, linha));
                     
                     tokenAtualValor = "";
-                    
+                    i+=1;
                     continue;
                 }
                 
@@ -222,6 +219,7 @@ namespace Compilador
                     if(!string.IsNullOrEmpty(tokenAtualValor))
                         tokenList.Add(new Token(tokenAtualValor, TipoToken.Desconhecido, linha));
                     tokenAtualValor = "";
+                    i++;
                     continue;
                 }
                 
@@ -232,7 +230,7 @@ namespace Compilador
 
                     linha++;
                     tokenAtualValor = "";
-                    
+                    i++;
                     continue;
                 }
                 
@@ -244,11 +242,12 @@ namespace Compilador
                     tokenAtualValor = entrada[i].ToString();
                     tokenList.Add(new Token(tokenAtualValor, TipoToken.Desconhecido, linha));
                     tokenAtualValor = "";
-                    
+                    i++;
                     continue;
                 }
                 
                 tokenAtualValor += entrada[i];
+                i++;
             }
             
             if(!string.IsNullOrEmpty(tokenAtualValor))

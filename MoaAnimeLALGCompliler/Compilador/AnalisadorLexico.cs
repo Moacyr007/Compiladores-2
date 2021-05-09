@@ -1,15 +1,9 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 
 namespace Compilador
 {
     public class AnalisadorLexico
     {
-        //palavraReservada = ('var', 'integer', 'real', 'if', 'then', 'while', 'do', 'write', 'read', 'else', 'begin', 'end', 'program', 'procedure')
-        //simbolo = ('*','+', '-', '=', '<', '>', '(', ')', ',', ':', ';', '$', ':=', '<>', '<=', '>=', '/')
-        //comentario = ('/', '*', '{', '}')
-
         public string Entrada { get; set; }
         public List<Token> Tokens { get; set; }
 
@@ -52,6 +46,7 @@ namespace Compilador
             {"<", TipoToken.OperadorComparacao},
             {"<>", TipoToken.OperadorComparacao},
             {">=", TipoToken.OperadorComparacao},
+            {"<=", TipoToken.OperadorComparacao},
             {"=", TipoToken.OperadorIgual},
         };
 
@@ -69,9 +64,6 @@ namespace Compilador
             {".", TipoToken.SimboloPonto},
         };
 
-        //Glalg = {N,T,P,S} 
-        //write, read, ;, else, begin, end, :, , , }
-        // {"ident", "numero_int", "numero_real", "(", ")", "*", "/", "+", "-",  "<", "if", "then", "$", "while", "do",
         public List<Token> Analisar()
         {
             if (Entrada == string.Empty)

@@ -19,8 +19,6 @@
         ReservadoThen = 15,
         ReservadoWhile = 16,
         ReservadoDo = 17,
-        ReservadoNumeroInt = 18,
-        ReservadoNumeroReal = 19,
         SimboloCifrao = 20,
         ReservadoIdent = 21,
         ReservadoProgram = 22,

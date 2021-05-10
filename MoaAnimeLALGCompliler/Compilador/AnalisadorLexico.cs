@@ -22,8 +22,6 @@ namespace Compilador
             {"then", TipoToken.ReservadoThen},
             {"while", TipoToken.ReservadoWhile},
             {"do", TipoToken.ReservadoDo},
-            {"numero_int", TipoToken.ReservadoNumeroInt},
-            {"numero_real", TipoToken.ReservadoNumeroReal},
             {"ident", TipoToken.ReservadoIdent},
             {"program", TipoToken.ReservadoProgram},
             {"begin", TipoToken.ReservadoBegin},

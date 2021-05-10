@@ -40,42 +40,38 @@ namespace Compilador
 
         #region AnalisadorSintatico
 
-        private void Programa()
+        private void Programa()//ok
         {
             UltimoIdex = Tokens.Count - 1;
             IndexAtual = 0;
 
             if (Tokens[IndexAtual].Tipo != TipoToken.ReservadoProgram)
                 ThrowCompiladorException(Tokens[IndexAtual]);
-
             IndexAtual++;
 
             if (Tokens[IndexAtual].Tipo != TipoToken.Identificador)
                 ThrowCompiladorException(Tokens[IndexAtual]);
-
             IndexAtual++;
 
             Corpo();
         }
 
-        private void Corpo()
+        private void Corpo()//ok
         {
             Dc();
 
             if (Tokens[IndexAtual].Tipo != TipoToken.ReservadoBegin)
                 ThrowCompiladorException(Tokens[IndexAtual]);
-
             IndexAtual++;
 
             Comandos();
 
             if (Tokens[IndexAtual].Tipo != TipoToken.ReservadoEnd)
                 ThrowCompiladorException(Tokens[IndexAtual]);
-
             IndexAtual++;
         }
 
-        private void Dc()
+        private void Dc()//OK
         {
             if (!IndexInRange())
                 return;
@@ -93,7 +89,7 @@ namespace Compilador
             }
         }
 
-        private void DcP()
+        private void DcP()//ok
         {
             if (Tokens[IndexAtual].Tipo == TipoToken.ReservadoProcedure)
             {
@@ -111,7 +107,7 @@ namespace Compilador
                 ThrowCompiladorException(Tokens[IndexAtual]);
         }
 
-        private void Parametros()
+        private void Parametros()//ok
         {
             if (Tokens[IndexAtual].Tipo == TipoToken.SimboloAbreParenteses)
             {
@@ -125,7 +121,7 @@ namespace Compilador
             }
         }
 
-        private void ListaPar()
+        private void ListaPar()//ok
         {
             Variaveis();
             if (Tokens[IndexAtual].Tipo == TipoToken.SimboloDoisPontos)
@@ -217,20 +213,25 @@ namespace Compilador
             }
         }
 
-        private void DcV()
+        private void DcV()//ok
         {
-            if (Tokens[IndexAtual].Tipo != TipoToken.ReservadoVar)
+            if (Tokens[IndexAtual].Tipo == TipoToken.ReservadoVar)
             {
                 IndexAtual++;
                 Variaveis();
+                if (Tokens[IndexAtual].Tipo == TipoToken.SimboloDoisPontos)
+                {
+                    IndexAtual++;
+                    TipoVar();
+                }
+                else
+                    ThrowCompiladorException(Tokens[IndexAtual]);
             }
             else
-            {
-                TipoVar();
-            }
+                ThrowCompiladorException(Tokens[IndexAtual]);
         }
 
-        private void Variaveis()
+        private void Variaveis()//ok
         {
             if (Tokens[IndexAtual].Tipo == TipoToken.Identificador)
             {
@@ -244,7 +245,7 @@ namespace Compilador
             }
         }
 
-        private void MaisVar()
+        private void MaisVar()//ok
         {
             if (Tokens[IndexAtual].Tipo == TipoToken.SimboloVirgula)
             {
@@ -253,24 +254,21 @@ namespace Compilador
             }
         }
 
-        private void TipoVar()
+        private void TipoVar()//ok
         {
-            if (Tokens[IndexAtual].Tipo == TipoToken.ReservadoNumeroReal)
+            if (Tokens[IndexAtual].Tipo == TipoToken.ReservadoReal ||
+                Tokens[IndexAtual].Tipo == TipoToken.ReservadoInteger)
                 IndexAtual++;
             else
                 ThrowCompiladorException(Tokens[IndexAtual]);
         }
 
-        private void MaisDc()
+        private void MaisDc()//ok
         {
-            switch (Tokens[IndexAtual].Tipo)
+            if (Tokens[IndexAtual].Tipo == TipoToken.SimboloPontoEVirgula)
             {
-                case TipoToken.ReservadoVar:
-                    Dc();
-                    break;
-                case TipoToken.ReservadoProcedure:
-                    Dc();
-                    break;
+                IndexAtual++;
+                Dc();
             }
         }
 
@@ -480,10 +478,13 @@ namespace Compilador
             switch (Tokens[IndexAtual].Tipo)
             {
                 case TipoToken.Identificador:
+                    IndexAtual++;
                     break;
-                case TipoToken.ReservadoNumeroInt:
+                case TipoToken.NumeroInteiro:
+                    IndexAtual++;
                     break;
-                case TipoToken.ReservadoNumeroReal:
+                case TipoToken.NumeroReal:
+                    IndexAtual++;
                     break;
                 case TipoToken.SimboloAbreParenteses:
                     IndexAtual++;

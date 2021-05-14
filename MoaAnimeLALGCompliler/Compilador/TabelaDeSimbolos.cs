@@ -14,28 +14,40 @@ namespace Compilador
         public Dictionary<string, Simbolo> Simbolos { get; set; }
 
 
-        public Simbolo Find(string cadeia)
+        public Simbolo Find(string key)
         {
-            return Simbolos[cadeia];
+            return Simbolos[key];
         }
 
-        public void AddNovaVariavel(Simbolo simbolo)
+        public void TryAddNovaVariavel(Simbolo simbolo)
         {
             //Verifica se a variaveil já está na tabela de simbolos
-            if (Simbolos.Any(x => x.Key == simbolo.Cadeia))
+            if (Simbolos.Any(x => x.Key == simbolo.Cadeia && x.Value.Escopo == simbolo.Escopo))
             {
                 throw new CompiladorException($"A variável {simbolo.Cadeia} já foi declarada");
             }
 
-            Simbolos.Add(simbolo.Cadeia,simbolo);
+            Simbolos.Add(simbolo.Escopo+":"+simbolo.Cadeia,simbolo);
         }
 
 
+        public void SetTipoVariaveis(TipoItemTs tipoItemTs)
+        {
+            foreach (var simboloTs in Simbolos)
+            {
+                if (simboloTs.Value.Tipo == TipoItemTs.Desconhecido)
+                {
+                    simboloTs.Value.Tipo = tipoItemTs;
+                }
+            }
+
+        }
+
         public void VerificarSeVariavelJaFoiDeclarada(Simbolo simbolo)
         {
-            if (Simbolos.All(x => x.Key != simbolo.Cadeia))
+            if (Simbolos.All(x => x.Key != simbolo.Escopo+":"+simbolo.Cadeia))
             {
-                throw new CompiladorException($"A variável {simbolo.Cadeia} já foi declarada");
+                throw new CompiladorException($"A variável {simbolo.Cadeia} não foi declarada");
             }
         }
         
@@ -65,7 +77,7 @@ namespace Compilador
             Tipo = tipoItemTs;
         }*/
         public string Cadeia { get; set; }
-        public int Escopo { get; set; }
+        public string Escopo { get; set; }
         public TipoItemTs Tipo { get; set; }
         
     }

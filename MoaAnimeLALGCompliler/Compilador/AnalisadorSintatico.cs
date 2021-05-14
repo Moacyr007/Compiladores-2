@@ -9,7 +9,6 @@ namespace Compilador
         public List<Token> Tokens { get; set; }
         public int UltimoIdex { get; set; }
         public int IndexAtual { get; set; }
-        public int EscopoAtual { get; set; }
         public TabelaDeSimbolos TabelaDeSimbolos { get; set; }
         public Stack<string> EscopoStack { get; set; }
         public Stack<string> CallStack { get; set; }
@@ -114,9 +113,13 @@ namespace Compilador
                 IndexAtual++;
                 if (Tokens[IndexAtual].Tipo == TipoToken.Identificador)
                 {
+                    EscopoStack.Push(Tokens[IndexAtual].Cadeia);
+                    
                     IndexAtual++;
                     Parametros();
                     CorpoP();
+
+                    EscopoStack.Pop();
                 }
                 else
                     ThrowCompiladorException(Tokens[IndexAtual]);
@@ -327,8 +330,16 @@ namespace Compilador
             CallStack.Push(nameof(TipoVar));
             
             if (Tokens[IndexAtual].Tipo == TipoToken.ReservadoReal ||
-                Tokens[IndexAtual].Tipo == TipoToken.ReservadoInteger)
+                Tokens[IndexAtual].Tipo == TipoToken.ReservadoInteger){
+                
+                var tipoItemTs = Tokens[IndexAtual].Tipo == TipoToken.ReservadoReal
+                    ? TipoItemTs.NumeroReal
+                    : TipoItemTs.NumeroInteiro;
+
+                TabelaDeSimbolos.SetTipoVariaveis(tipoItemTs);
+                
                 IndexAtual++;
+            }
             else
                 ThrowCompiladorException(Tokens[IndexAtual]);
             
@@ -644,56 +655,28 @@ namespace Compilador
             return IndexAtual <= UltimoIdex;
         }
 
-        public TipoItemTs GetTipoItemTs()
+        private void ValidarDeclaracaoVariavel()
         {
-            //TODO ver o que isso faz e corrigir
-            TipoItemTs tipoItemTs;
-            if (Tokens[IndexAtual - 1].Tipo == TipoToken.ReservadoProcedure)
+            
+            var callerName = "";
+            var i = 0;
+            
+            while (new List<string>(){nameof(MaisVar), nameof(Variaveis)}.Contains(CallStack.ElementAt(i)))
             {
-                tipoItemTs = Compilador.TipoItemTs.Procedimento;
+                i++;
             }
-            else if (Tokens[IndexAtual].Tipo == TipoToken.NumeroReal)
+
+            callerName = CallStack.ElementAt(i);
+            
+            if (callerName == nameof(DcV) || callerName == nameof(ListaPar))
             {
-                tipoItemTs = Compilador.TipoItemTs.NumeroReal;
-            }
-            else if (Tokens[IndexAtual].Tipo == TipoToken.NumeroInteiro)
-            {
-                tipoItemTs = Compilador.TipoItemTs.NumeroInteiro;
+                TabelaDeSimbolos.TryAddNovaVariavel(new Simbolo
+                    {Cadeia = Tokens[IndexAtual].Cadeia, Escopo = EscopoStack.Peek(), Tipo = TipoItemTs.Desconhecido});
             }
             else
             {
-                //TODO ver mensagem pro erro
-                throw new CompiladorException();
-            }
-
-            return tipoItemTs;
-        }
-
-        private void ValidarDeclaracaoVariavel()
-        {
-            // ReSharper disable once PossibleNullReferenceException
-            var callerName = CallStack.ElementAt(1);
-
-            switch (callerName)
-            {
-                //Declaracao variaveis
-                case nameof(DcV):
-                    TabelaDeSimbolos.AddNovaVariavel(new Simbolo
-                        {Cadeia = Tokens[IndexAtual].Cadeia, Escopo = EscopoAtual, Tipo = GetTipoItemTs()});
-                    break;
-                case nameof(MaisVar):
-                    TabelaDeSimbolos.AddNovaVariavel(new Simbolo
-                        {Cadeia = Tokens[IndexAtual].Cadeia, Escopo = EscopoAtual, Tipo = GetTipoItemTs()});
-                    break;
-                //Parametro
-                case nameof(ListaPar):
-                    TabelaDeSimbolos.VerificarSeVariavelJaFoiDeclarada(new Simbolo
-                        {Cadeia = Tokens[IndexAtual].Cadeia, Escopo = EscopoAtual, Tipo = TipoItemTs.Desconhecido});
-                    break;
-                case nameof(Comando):
-                    TabelaDeSimbolos.VerificarSeVariavelJaFoiDeclarada(new Simbolo
-                        {Cadeia = Tokens[IndexAtual].Cadeia, Escopo = EscopoAtual, Tipo = TipoItemTs.Desconhecido});
-                    break;
+                TabelaDeSimbolos.VerificarSeVariavelJaFoiDeclarada(new Simbolo
+                    {Cadeia = Tokens[IndexAtual].Cadeia, Escopo = EscopoStack.Peek(), Tipo = TipoItemTs.Desconhecido});
             }
         }
     }

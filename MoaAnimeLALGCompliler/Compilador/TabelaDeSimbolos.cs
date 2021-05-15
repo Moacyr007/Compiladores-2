@@ -14,9 +14,9 @@ namespace Compilador
         public Dictionary<string, Simbolo> Simbolos { get; set; }
 
 
-        public Simbolo Find(string key)
+        public Simbolo Find(string cadeia, string escopo)
         {
-            return Simbolos[key];
+            return Simbolos[escopo+":"+cadeia];
         }
 
         public void TryAddNovaVariavel(Simbolo simbolo)

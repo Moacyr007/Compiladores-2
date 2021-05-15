@@ -107,7 +107,7 @@ namespace Compilador
                 {
                     Tokens.Add(new Token(
                         token.Cadeia,
-                        TipoToken.NumeroInteiro,
+                        TipoToken.NumeroReal,
                         token.Linha));
                 }
 

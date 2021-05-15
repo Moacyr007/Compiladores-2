@@ -13,12 +13,15 @@ namespace Compilador
         public Stack<string> EscopoStack { get; set; }
         public Stack<string> CallStack { get; set; }
 
+        public List<TipoItemTs> TipoItensExpressao { get; set; }
+
         public AnalisadorSintatico(List<Token> tokens)
         {
             Tokens = tokens;
             TabelaDeSimbolos = new TabelaDeSimbolos();
             EscopoStack = new Stack<string>();
             CallStack = new Stack<string>();
+            TipoItensExpressao = new List<TipoItemTs>();
         }
 
         private void ThrowCompiladorException(Token token)
@@ -40,10 +43,10 @@ namespace Compilador
 
         #region AnalisadorSintatico
 
-        private void Programa()//ok
+        private void Programa() //ok
         {
             CallStack.Push(nameof(Programa));
-            
+
             UltimoIdex = Tokens.Count - 1;
             IndexAtual = 0;
 
@@ -53,20 +56,20 @@ namespace Compilador
 
             if (Tokens[IndexAtual].Tipo != TipoToken.Identificador)
                 ThrowCompiladorException(Tokens[IndexAtual]);
-            
+
             EscopoStack.Push($"Global: {Tokens[IndexAtual].Cadeia}");
-            
+
             IndexAtual++;
-            
+
             Corpo();
 
             CallStack.Pop();
         }
 
-        private void Corpo()//ok
+        private void Corpo() //ok
         {
             CallStack.Push(nameof(Corpo));
-            
+
             Dc();
 
             if (Tokens[IndexAtual].Tipo != TipoToken.ReservadoBegin)
@@ -78,14 +81,14 @@ namespace Compilador
             if (Tokens[IndexAtual].Tipo != TipoToken.ReservadoEnd)
                 ThrowCompiladorException(Tokens[IndexAtual]);
             IndexAtual++;
-            
+
             CallStack.Pop();
         }
 
-        private void Dc()//OK
+        private void Dc() //OK
         {
             CallStack.Push(nameof(Dc));
-            
+
             if (!IndexInRange())
                 return;
 
@@ -100,21 +103,21 @@ namespace Compilador
                     MaisDc();
                     break;
             }
-            
+
             CallStack.Pop();
         }
 
-        private void DcP()//ok
+        private void DcP() //ok
         {
             CallStack.Push(nameof(DcP));
-            
+
             if (Tokens[IndexAtual].Tipo == TipoToken.ReservadoProcedure)
             {
                 IndexAtual++;
                 if (Tokens[IndexAtual].Tipo == TipoToken.Identificador)
                 {
                     EscopoStack.Push(Tokens[IndexAtual].Cadeia);
-                    
+
                     IndexAtual++;
                     Parametros();
                     CorpoP();
@@ -126,14 +129,14 @@ namespace Compilador
             }
             else
                 ThrowCompiladorException(Tokens[IndexAtual]);
-            
+
             CallStack.Pop();
         }
 
-        private void Parametros()//ok
+        private void Parametros() //ok
         {
             CallStack.Push(nameof(Programa));
-            
+
             if (Tokens[IndexAtual].Tipo == TipoToken.SimboloAbreParenteses)
             {
                 IndexAtual++;
@@ -144,14 +147,14 @@ namespace Compilador
                 else
                     ThrowCompiladorException(Tokens[IndexAtual]);
             }
-            
+
             CallStack.Pop();
         }
 
-        private void ListaPar()//ok
+        private void ListaPar() //ok
         {
             CallStack.Push(nameof(ListaPar));
-            
+
             Variaveis();
             if (Tokens[IndexAtual].Tipo == TipoToken.SimboloDoisPontos)
             {
@@ -163,27 +166,27 @@ namespace Compilador
             {
                 ThrowCompiladorException(Tokens[IndexAtual]);
             }
-            
+
             CallStack.Pop();
         }
 
         private void MaisPar()
         {
             CallStack.Push(nameof(MaisPar));
-            
+
             if (Tokens[IndexAtual].Tipo == TipoToken.SimboloPontoEVirgula)
             {
                 IndexAtual++;
                 ListaPar();
             }
-            
+
             CallStack.Pop();
         }
 
         private void CorpoP()
         {
             CallStack.Push(nameof(CorpoP));
-            
+
             DcLoc();
             if (Tokens[IndexAtual].Tipo == TipoToken.ReservadoBegin)
             {
@@ -198,37 +201,37 @@ namespace Compilador
             }
             else
                 ThrowCompiladorException(Tokens[IndexAtual]);
-            
+
             CallStack.Pop();
         }
 
         private void DcLoc()
         {
             CallStack.Push(nameof(DcLoc));
-            
+
             DcV();
             MaisDcloc();
-            
+
             CallStack.Pop();
         }
 
         private void MaisDcloc()
         {
             CallStack.Push(nameof(MaisDcloc));
-            
+
             if (Tokens[IndexAtual].Tipo == TipoToken.SimboloPontoEVirgula)
             {
                 IndexAtual++;
                 DcLoc();
             }
-            
+
             CallStack.Pop();
         }
 
         private void ListaArg()
         {
             CallStack.Push(nameof(ListaArg));
-            
+
             if (Tokens[IndexAtual].Tipo == TipoToken.SimboloAbreParenteses)
             {
                 IndexAtual++;
@@ -240,14 +243,14 @@ namespace Compilador
                 else
                     ThrowCompiladorException(Tokens[IndexAtual]);
             }
-            
+
             CallStack.Pop();
         }
 
         private void Argumentos()
         {
             CallStack.Push(nameof(Argumentos));
-            
+
             if (Tokens[IndexAtual].Tipo == TipoToken.Identificador)
             {
                 IndexAtual++;
@@ -255,24 +258,24 @@ namespace Compilador
             }
             else
                 ThrowCompiladorException(Tokens[IndexAtual]);
-            
+
             CallStack.Pop();
         }
 
         private void MaisIdent()
         {
             CallStack.Push(nameof(MaisIdent));
-            
+
             if (Tokens[IndexAtual].Tipo == TipoToken.SimboloPontoEVirgula)
             {
                 IndexAtual++;
                 Argumentos();
             }
-            
+
             CallStack.Pop();
         }
 
-        private void DcV()//ok
+        private void DcV() //ok
         {
             CallStack.Push(nameof(DcV));
 
@@ -290,17 +293,17 @@ namespace Compilador
             }
             else
                 ThrowCompiladorException(Tokens[IndexAtual]);
-            
+
             CallStack.Pop();
         }
 
-        private void Variaveis()//ok
+        private void Variaveis() //ok
         {
             CallStack.Push(nameof(Variaveis));
-            
+
             if (Tokens[IndexAtual].Tipo == TipoToken.Identificador)
             {
-                ValidarDeclaracaoVariavel();
+                ValidarVariavel();
                 IndexAtual++;
                 MaisVar();
             }
@@ -308,97 +311,97 @@ namespace Compilador
             {
                 ThrowCompiladorException(Tokens[IndexAtual]);
             }
-            
+
             CallStack.Pop();
         }
 
-        private void MaisVar()//ok
+        private void MaisVar() //ok
         {
             CallStack.Push(nameof(MaisVar));
-            
+
             if (Tokens[IndexAtual].Tipo == TipoToken.SimboloVirgula)
             {
                 IndexAtual++;
                 Variaveis();
             }
-            
+
             CallStack.Pop();
         }
 
-        private void TipoVar()//ok
+        private void TipoVar() //ok
         {
             CallStack.Push(nameof(TipoVar));
-            
+
             if (Tokens[IndexAtual].Tipo == TipoToken.ReservadoReal ||
-                Tokens[IndexAtual].Tipo == TipoToken.ReservadoInteger){
-                
+                Tokens[IndexAtual].Tipo == TipoToken.ReservadoInteger)
+            {
                 var tipoItemTs = Tokens[IndexAtual].Tipo == TipoToken.ReservadoReal
                     ? TipoItemTs.NumeroReal
                     : TipoItemTs.NumeroInteiro;
 
                 TabelaDeSimbolos.SetTipoVariaveis(tipoItemTs);
-                
+
                 IndexAtual++;
             }
             else
                 ThrowCompiladorException(Tokens[IndexAtual]);
-            
+
             CallStack.Pop();
         }
 
-        private void MaisDc()//ok
+        private void MaisDc() //ok
         {
             CallStack.Push(nameof(MaisDc));
-            
+
             if (Tokens[IndexAtual].Tipo == TipoToken.SimboloPontoEVirgula)
             {
                 IndexAtual++;
                 Dc();
             }
-            
+
             CallStack.Pop();
         }
 
         private void Pfalsa()
         {
             CallStack.Push(nameof(Pfalsa));
-            
+
             if (Tokens[IndexAtual].Tipo == TipoToken.ReservadoElse)
             {
                 IndexAtual++;
                 Comandos();
             }
-            
+
             CallStack.Pop();
         }
 
         private void Comandos()
         {
             CallStack.Push(nameof(Comandos));
-            
+
             Comando();
             MaisComandos();
-            
+
             CallStack.Pop();
         }
 
         private void MaisComandos()
         {
             CallStack.Push(nameof(MaisComandos));
-            
+
             if (Tokens[IndexAtual].Tipo == TipoToken.SimboloPontoEVirgula)
             {
                 IndexAtual++;
                 Comandos();
             }
-            
+
             CallStack.Pop();
         }
 
         private void Comando()
         {
             CallStack.Push(nameof(Comando));
-            
+
             switch (Tokens[IndexAtual].Tipo)
             {
                 case TipoToken.ReservadoRead:
@@ -482,48 +485,58 @@ namespace Compilador
                     ThrowCompiladorException(Tokens[IndexAtual]);
                     break;
             }
-            
+
             CallStack.Pop();
         }
 
         private void RestoIdent()
         {
             CallStack.Push(nameof(RestoIdent));
-            
+
             if (Tokens[IndexAtual].Tipo == TipoToken.SimboloAtribuicao)
             {
                 IndexAtual++;
                 Expressao();
+                ValidarTiposAtribuicao();
             }
             else
             {
                 ListaArg();
             }
-            
+
             CallStack.Pop();
         }
 
         private void Condicao()
         {
             CallStack.Push(nameof(Condicao));
-            
+
             Expressao();
+            var tipoExpressao1 = TipoItensExpressao.FirstOrDefault();
+
             Relacao();
             Expressao();
-            
+            var tipoExpressao2 = TipoItensExpressao.FirstOrDefault();
+
+            if (tipoExpressao1 != tipoExpressao2)
+            {
+                throw new CompiladorException(
+                    $"Não é possível comparar expressões de tipos diferentes\nLinha: {Tokens[IndexAtual].Linha}");
+            }
+
             CallStack.Pop();
         }
 
         private void Relacao()
         {
             CallStack.Push(nameof(Relacao));
-            
+
             if (Tokens[IndexAtual].Tipo == TipoToken.OperadorIgual ||
                 Tokens[IndexAtual].Tipo == TipoToken.OperadorComparacao)
             {
                 IndexAtual++;
             }
-            
+
             CallStack.Pop();
         }
 
@@ -531,28 +544,31 @@ namespace Compilador
         private void Expressao()
         {
             CallStack.Push(nameof(Expressao));
-            
+            TipoItensExpressao = new List<TipoItemTs>();
+
             Termo();
             OutrosTermos();
-            
+
+            ValidarTiposExpressao();
+
             CallStack.Pop();
         }
 
         private void OpUn()
         {
             CallStack.Push(nameof(OpUn));
-            
+
             if (Tokens[IndexAtual].Tipo == TipoToken.OperadorSoma ||
                 Tokens[IndexAtual].Tipo == TipoToken.OperadorSubtracao)
                 IndexAtual++;
-            
+
             CallStack.Pop();
         }
 
         private void OutrosTermos()
         {
             CallStack.Push(nameof(OutrosTermos));
-            
+
             if (Tokens[IndexAtual].Tipo == TipoToken.OperadorSoma ||
                 Tokens[IndexAtual].Tipo == TipoToken.OperadorSubtracao)
             {
@@ -560,38 +576,38 @@ namespace Compilador
                 Termo();
                 OutrosTermos();
             }
-            
+
             CallStack.Pop();
         }
 
         private void OpAd()
         {
             CallStack.Push(nameof(OpAd));
-            
+
             if (Tokens[IndexAtual].Tipo == TipoToken.OperadorSoma ||
                 Tokens[IndexAtual].Tipo == TipoToken.OperadorSubtracao)
             {
                 IndexAtual++;
             }
-            
+
             CallStack.Pop();
         }
 
         private void Termo()
         {
             CallStack.Push(nameof(Termo));
-            
+
             OpUn();
             Fator();
             MaisFatores();
-            
+
             CallStack.Pop();
         }
 
         private void MaisFatores()
         {
             CallStack.Push(nameof(MaisFatores));
-            
+
             if (Tokens[IndexAtual].Tipo == TipoToken.OperadorMultiplicacao ||
                 Tokens[IndexAtual].Tipo == TipoToken.OperadorDivisao)
             {
@@ -599,37 +615,42 @@ namespace Compilador
                 Fator();
                 MaisFatores();
             }
-            
+
             CallStack.Pop();
         }
 
         private void OpMul()
         {
             CallStack.Push(nameof(OpMul));
-            
+
             if (Tokens[IndexAtual].Tipo == TipoToken.OperadorMultiplicacao ||
                 Tokens[IndexAtual].Tipo == TipoToken.OperadorDivisao)
             {
                 IndexAtual++;
             }
-            
+
             CallStack.Pop();
         }
 
         private void Fator()
         {
             CallStack.Push(nameof(Fator));
-            
+
             switch (Tokens[IndexAtual].Tipo)
             {
                 case TipoToken.Identificador:
+                    ValidarVariavel();
+                    var simboloTs = TabelaDeSimbolos.Find(Tokens[IndexAtual].Cadeia, EscopoStack.Peek());
+                    TipoItensExpressao.Add(simboloTs.Tipo);
                     IndexAtual++;
                     break;
                 case TipoToken.NumeroInteiro:
                     IndexAtual++;
+                    TipoItensExpressao.Add(TipoItemTs.NumeroInteiro);
                     break;
                 case TipoToken.NumeroReal:
                     IndexAtual++;
+                    TipoItensExpressao.Add(TipoItemTs.NumeroReal);
                     break;
                 case TipoToken.SimboloAbreParenteses:
                     IndexAtual++;
@@ -642,7 +663,7 @@ namespace Compilador
                         ThrowCompiladorException(Tokens[IndexAtual]);
                     break;
             }
-            
+
             CallStack.Pop();
         }
 
@@ -655,19 +676,17 @@ namespace Compilador
             return IndexAtual <= UltimoIdex;
         }
 
-        private void ValidarDeclaracaoVariavel()
+        private void ValidarVariavel()
         {
-            
-            var callerName = "";
             var i = 0;
-            
-            while (new List<string>(){nameof(MaisVar), nameof(Variaveis)}.Contains(CallStack.ElementAt(i)))
+
+            while (new List<string>() {nameof(MaisVar), nameof(Variaveis)}.Contains(CallStack.ElementAt(i)))
             {
                 i++;
             }
 
-            callerName = CallStack.ElementAt(i);
-            
+            var callerName = CallStack.ElementAt(i);
+
             if (callerName == nameof(DcV) || callerName == nameof(ListaPar))
             {
                 TabelaDeSimbolos.TryAddNovaVariavel(new Simbolo
@@ -680,6 +699,40 @@ namespace Compilador
             {
                 TabelaDeSimbolos.VerificarSeVariavelJaFoiDeclarada(new Simbolo
                     {Cadeia = Tokens[IndexAtual].Cadeia, Escopo = EscopoStack.Peek(), Tipo = TipoItemTs.Desconhecido});
+            }
+        }
+
+        private void ValidarTiposAtribuicao()
+        {
+            TipoItemTs tipoSimbolo;
+
+            switch (Tokens[IndexAtual - 1].Tipo)
+            {
+                case TipoToken.Identificador:
+                    tipoSimbolo = TabelaDeSimbolos.Find(Tokens[IndexAtual - 1].Cadeia, EscopoStack.Peek()).Tipo;
+                    break;
+                case TipoToken.NumeroReal:
+                    tipoSimbolo = TipoItemTs.NumeroReal;
+                    break;
+                default:
+                    tipoSimbolo = TipoItemTs.NumeroInteiro;
+                    break;
+            }
+
+            if (TipoItensExpressao.Any(x => x != tipoSimbolo))
+            {
+                throw new CompiladorException(
+                    $"Atribuição inválida, era esperado um valor do tipo {tipoSimbolo.ToString()}");
+            }
+        }
+
+        private void ValidarTiposExpressao()
+        {
+            var firstTipoExpressao = TipoItensExpressao.FirstOrDefault();
+            if (TipoItensExpressao.Any(x => x != firstTipoExpressao))
+            {
+                throw new CompiladorException(
+                    $"Não é possível comparar tipos diferentes\nLinha: {Tokens[IndexAtual].Linha}");
             }
         }
     }

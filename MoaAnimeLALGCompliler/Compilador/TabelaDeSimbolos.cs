@@ -24,7 +24,7 @@ namespace Compilador
             //Verifica se a variaveil já está na tabela de simbolos
             if (Simbolos.Any(x => x.Key == simbolo.Cadeia && x.Value.Escopo == simbolo.Escopo))
             {
-                throw new CompiladorException($"A variável {simbolo.Cadeia} já foi declarada");
+                throw new CompiladorException($"A variável {simbolo.Cadeia} já foi declarada\nLinha: {simbolo.Linha}");
             }
 
             Simbolos.Add(simbolo.Escopo+":"+simbolo.Cadeia,simbolo);
@@ -47,7 +47,7 @@ namespace Compilador
         {
             if (Simbolos.All(x => x.Key != simbolo.Escopo+":"+simbolo.Cadeia))
             {
-                throw new CompiladorException($"A variável {simbolo.Cadeia} não foi declarada");
+                throw new CompiladorException($"A variável {simbolo.Cadeia} não foi declarada\nLinha: {simbolo.Linha}");
             }
         }
         
@@ -79,6 +79,9 @@ namespace Compilador
         public string Cadeia { get; set; }
         public string Escopo { get; set; }
         public TipoItemTs Tipo { get; set; }
+        
+        public int Linha { get; set; }
+
         
     }
 }

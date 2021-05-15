@@ -671,7 +671,10 @@ namespace Compilador
             if (callerName == nameof(DcV) || callerName == nameof(ListaPar))
             {
                 TabelaDeSimbolos.TryAddNovaVariavel(new Simbolo
-                    {Cadeia = Tokens[IndexAtual].Cadeia, Escopo = EscopoStack.Peek(), Tipo = TipoItemTs.Desconhecido});
+                {
+                    Cadeia = Tokens[IndexAtual].Cadeia, Escopo = EscopoStack.Peek(), Tipo = TipoItemTs.Desconhecido,
+                    Linha = Tokens[IndexAtual].Linha
+                });
             }
             else
             {

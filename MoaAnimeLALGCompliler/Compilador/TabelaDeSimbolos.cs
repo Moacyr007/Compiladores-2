@@ -9,25 +9,25 @@ namespace Compilador
     {
         public TabelaDeSimbolos()
         {
-            Simbolos = new Dictionary<string, Simbolo>();
+            Simbolos = new Dictionary<string, ItemTs>();
         }
-        public Dictionary<string, Simbolo> Simbolos { get; set; }
+        public Dictionary<string, ItemTs> Simbolos { get; set; }
 
 
-        public Simbolo Find(string cadeia, string escopo)
+        public ItemTs Find(string cadeia, string escopo)
         {
             return Simbolos[escopo+":"+cadeia];
         }
 
-        public void TryAddNovaVariavel(Simbolo simbolo)
+        public void TryAddNewItem(ItemTs itemTs)
         {
             //Verifica se a variaveil já está na tabela de simbolos
-            if (Simbolos.Any(x => x.Key == simbolo.Cadeia && x.Value.Escopo == simbolo.Escopo))
+            if (Simbolos.Any(x => x.Key == itemTs.Cadeia && x.Value.Escopo == itemTs.Escopo))
             {
-                throw new CompiladorException($"A variável {simbolo.Cadeia} já foi declarada\nLinha: {simbolo.Linha}");
+                throw new CompiladorException($"A variável {itemTs.Cadeia} já foi declarada\nLinha: {itemTs.Linha}");
             }
 
-            Simbolos.Add(simbolo.Escopo+":"+simbolo.Cadeia,simbolo);
+            Simbolos.Add(itemTs.Escopo+":"+itemTs.Cadeia,itemTs);
         }
 
 
@@ -43,11 +43,11 @@ namespace Compilador
 
         }
 
-        public void VerificarSeVariavelJaFoiDeclarada(Simbolo simbolo)
+        public void VerificarSeVariavelJaFoiDeclarada(ItemTs itemTs)
         {
-            if (Simbolos.All(x => x.Key != simbolo.Escopo+":"+simbolo.Cadeia))
+            if (Simbolos.All(x => x.Key != itemTs.Escopo+":"+itemTs.Cadeia))
             {
-                throw new CompiladorException($"A variável {simbolo.Cadeia} não foi declarada\nLinha: {simbolo.Linha}");
+                throw new CompiladorException($"A variável {itemTs.Cadeia} não foi declarada\nLinha: {itemTs.Linha}");
             }
         }
         
@@ -67,21 +67,27 @@ namespace Compilador
         NumeroReal,
         Procedimento
     }
-
-    public class Simbolo
+    
+    public enum TipoParametro
     {
-        /*public Simbolo(string cadeia, int escopo, TipoItemTs tipoItemTs)
-        {
-            Cadeia = cadeia;
-            Escopo = escopo;
-            Tipo = tipoItemTs;
-        }*/
+        Desconhecido,
+        NumeroInteiro,
+        NumeroReal,
+    }
+
+    public class ItemTs
+    {
         public string Cadeia { get; set; }
         public string Escopo { get; set; }
         public TipoItemTs Tipo { get; set; }
-        
         public int Linha { get; set; }
 
-        
+        public List<Parametro> Parametros { get; set; }
+    }
+    
+    public class Parametro
+    {
+        public string Cadeia { get; set; }
+        public TipoParametro Tipo { get; set; }
     }
 }

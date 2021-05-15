@@ -43,7 +43,7 @@ namespace Compilador
 
         #region AnalisadorSintatico
 
-        private void Programa() //ok
+        private void Programa()
         {
             CallStack.Push(nameof(Programa));
 
@@ -66,7 +66,7 @@ namespace Compilador
             CallStack.Pop();
         }
 
-        private void Corpo() //ok
+        private void Corpo()
         {
             CallStack.Push(nameof(Corpo));
 
@@ -85,7 +85,7 @@ namespace Compilador
             CallStack.Pop();
         }
 
-        private void Dc() //OK
+        private void Dc()
         {
             CallStack.Push(nameof(Dc));
 
@@ -107,7 +107,7 @@ namespace Compilador
             CallStack.Pop();
         }
 
-        private void DcP() //ok
+        private void DcP()
         {
             CallStack.Push(nameof(DcP));
 
@@ -116,10 +116,24 @@ namespace Compilador
                 IndexAtual++;
                 if (Tokens[IndexAtual].Tipo == TipoToken.Identificador)
                 {
+                    var procedure = new ItemTs
+                    {
+                        Cadeia = Tokens[IndexAtual].Cadeia,
+                        Escopo = EscopoStack.Peek(),
+                        Tipo = TipoItemTs.Procedimento,
+                        Linha = Tokens[IndexAtual].Linha,
+                        Parametros = new List<Parametro>()
+                    };
+
                     EscopoStack.Push(Tokens[IndexAtual].Cadeia);
 
                     IndexAtual++;
                     Parametros();
+
+                    AddParametrosNaProcedure(procedure);
+
+                    TabelaDeSimbolos.TryAddNewItem(procedure);
+
                     CorpoP();
 
                     EscopoStack.Pop();
@@ -133,7 +147,9 @@ namespace Compilador
             CallStack.Pop();
         }
 
-        private void Parametros() //ok
+       
+
+        private void Parametros()
         {
             CallStack.Push(nameof(Programa));
 
@@ -151,7 +167,7 @@ namespace Compilador
             CallStack.Pop();
         }
 
-        private void ListaPar() //ok
+        private void ListaPar()
         {
             CallStack.Push(nameof(ListaPar));
 
@@ -275,7 +291,7 @@ namespace Compilador
             CallStack.Pop();
         }
 
-        private void DcV() //ok
+        private void DcV()
         {
             CallStack.Push(nameof(DcV));
 
@@ -297,7 +313,7 @@ namespace Compilador
             CallStack.Pop();
         }
 
-        private void Variaveis() //ok
+        private void Variaveis()
         {
             CallStack.Push(nameof(Variaveis));
 
@@ -315,7 +331,7 @@ namespace Compilador
             CallStack.Pop();
         }
 
-        private void MaisVar() //ok
+        private void MaisVar()
         {
             CallStack.Push(nameof(MaisVar));
 
@@ -328,7 +344,7 @@ namespace Compilador
             CallStack.Pop();
         }
 
-        private void TipoVar() //ok
+        private void TipoVar() 
         {
             CallStack.Push(nameof(TipoVar));
 
@@ -349,7 +365,7 @@ namespace Compilador
             CallStack.Pop();
         }
 
-        private void MaisDc() //ok
+        private void MaisDc() 
         {
             CallStack.Push(nameof(MaisDc));
 
@@ -689,7 +705,7 @@ namespace Compilador
 
             if (callerName == nameof(DcV) || callerName == nameof(ListaPar))
             {
-                TabelaDeSimbolos.TryAddNovaVariavel(new Simbolo
+                TabelaDeSimbolos.TryAddNewItem(new ItemTs
                 {
                     Cadeia = Tokens[IndexAtual].Cadeia, Escopo = EscopoStack.Peek(), Tipo = TipoItemTs.Desconhecido,
                     Linha = Tokens[IndexAtual].Linha
@@ -697,7 +713,7 @@ namespace Compilador
             }
             else
             {
-                TabelaDeSimbolos.VerificarSeVariavelJaFoiDeclarada(new Simbolo
+                TabelaDeSimbolos.VerificarSeVariavelJaFoiDeclarada(new ItemTs
                     {Cadeia = Tokens[IndexAtual].Cadeia, Escopo = EscopoStack.Peek(), Tipo = TipoItemTs.Desconhecido});
             }
         }
@@ -735,7 +751,29 @@ namespace Compilador
                     $"Não é possível comparar tipos diferentes\nLinha: {Tokens[IndexAtual].Linha}");
             }
         }
+        
+        private void AddParametrosNaProcedure(ItemTs procedure)
+        {
+            var i = IndexAtual-4;
+            while (Tokens[i].Tipo != TipoToken.SimboloAbreParenteses)
+            {
+                if (Tokens[i].Tipo == TipoToken.Identificador)
+                {
+                    procedure.Parametros.Add(new Parametro
+                    {
+                        Cadeia = Tokens[i].Cadeia,
+                        Tipo = Tokens[i + 2].Tipo == TipoToken.ReservadoInteger
+                            ? TipoParametro.NumeroInteiro
+                            : TipoParametro.NumeroReal
+                    });
+                }
+
+                i--;
+            }
+        }
     }
+    
+    
 
     #endregion
 }

@@ -147,7 +147,6 @@ namespace Compilador
             CallStack.Pop();
         }
 
-       
 
         private void Parametros()
         {
@@ -344,7 +343,7 @@ namespace Compilador
             CallStack.Pop();
         }
 
-        private void TipoVar() 
+        private void TipoVar()
         {
             CallStack.Push(nameof(TipoVar));
 
@@ -365,7 +364,7 @@ namespace Compilador
             CallStack.Pop();
         }
 
-        private void MaisDc() 
+        private void MaisDc()
         {
             CallStack.Push(nameof(MaisDc));
 
@@ -504,6 +503,7 @@ namespace Compilador
                     {
                         ValidarParametros(procedure);
                     }
+
                     break;
 
                 default:
@@ -514,7 +514,7 @@ namespace Compilador
             CallStack.Pop();
         }
 
-        
+
         private void RestoIdent()
         {
             CallStack.Push(nameof(RestoIdent));
@@ -739,7 +739,7 @@ namespace Compilador
             }
 
             indexAtribuicao--;
-            
+
             switch (Tokens[indexAtribuicao].Tipo)
             {
                 case TipoToken.Identificador:
@@ -769,23 +769,24 @@ namespace Compilador
                     $"Não é possível ter  tipos diferentes em uma expressão\nLinha: {Tokens[IndexAtual].Linha}");
             }
         }
-        
+
         private void AddParametrosNaProcedure(ItemTs procedure)
         {
-            var i = IndexAtual-4;
-           
-            
+            var i = IndexAtual - 4;
+
+
             while (Tokens[i].Tipo != TipoToken.SimboloAbreParenteses)
             {
                 if (Tokens[i].Tipo == TipoToken.Identificador)
                 {
                     var indexTipoParametro = i;
-                    
-                    while (Tokens[indexTipoParametro].Tipo != TipoToken.ReservadoInteger && Tokens[indexTipoParametro].Tipo != TipoToken.ReservadoReal)
+
+                    while (Tokens[indexTipoParametro].Tipo != TipoToken.ReservadoInteger &&
+                           Tokens[indexTipoParametro].Tipo != TipoToken.ReservadoReal)
                     {
                         indexTipoParametro++;
                     }
-                    
+
                     procedure.Parametros.Add(new Parametro
                     {
                         Cadeia = Tokens[i].Cadeia,
@@ -798,7 +799,7 @@ namespace Compilador
                 i--;
             }
         }
-        
+
         private void ValidarParametros(ItemTs procedure)
         {
             //Validar argumentos procedure
@@ -830,14 +831,11 @@ namespace Compilador
                 if (tipoParametros[j] != procedure.Parametros[j].Tipo)
                 {
                     throw new CompiladorException(
-                        $"Parametro com tipo diferente do esperado, encontrou {tipoParametros[j].ToString()} mas esperava {procedure.Parametros[j].Tipo.ToString()}\nLinha: {procedure.Linha}");
+                        $"Parametro com tipo diferente do esperado, encontrou {tipoParametros[j].ToString()} mas esperava {procedure.Parametros[j].Tipo.ToString()}\nLinha: {Tokens[IndexAtual].Linha}");
                 }
             }
         }
-
     }
-    
-    
 
     #endregion
 }

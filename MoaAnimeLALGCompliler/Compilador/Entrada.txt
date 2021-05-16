@@ -41,6 +41,6 @@ read(g); {inteiro}
 read(h); { inteiro} 
 d := e/f; {real}
 dois(h;d;h);
-um(f;e;g;h)         {real,real,inteiro,inteiro}
+um(g;h;f;e)         {real,real,inteiro,inteiro}
 {aqui termina o programa}
 end.

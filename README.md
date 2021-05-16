@@ -66,3 +66,5 @@ Regras de Produção da LALG
 <mais_fatores> ::= <op_mul> <fator> <mais_fatores> | λ
 <op_mul> ::= * | /
 <fator> ::= ident | numero_int | numero_real | (<expressao>)
+
+Obs: Rodar o program.cs pra testar o compilador e deixar a entrada em entrada.txt

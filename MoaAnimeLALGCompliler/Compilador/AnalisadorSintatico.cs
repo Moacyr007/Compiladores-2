@@ -15,6 +15,8 @@ namespace Compilador
 
         public List<TipoItemTs> TipoItensExpressao { get; set; }
 
+        public bool? IsOpDivisao { get; set; }
+
         public AnalisadorSintatico(List<Token> tokens)
         {
             Tokens = tokens;
@@ -570,6 +572,8 @@ namespace Compilador
         private void Expressao()
         {
             CallStack.Push(nameof(Expressao));
+
+            IsOpDivisao = null;
             TipoItensExpressao = new List<TipoItemTs>();
 
             Termo();
@@ -652,6 +656,8 @@ namespace Compilador
             if (Tokens[IndexAtual].Tipo == TipoToken.OperadorMultiplicacao ||
                 Tokens[IndexAtual].Tipo == TipoToken.OperadorDivisao)
             {
+                if (Tokens[IndexAtual].Tipo == TipoToken.OperadorDivisao)
+                    IsOpDivisao = true;
                 IndexAtual++;
             }
 
@@ -763,6 +769,16 @@ namespace Compilador
         private void ValidarTiposExpressao()
         {
             var firstTipoExpressao = TipoItensExpressao.FirstOrDefault();
+
+            if (IsOpDivisao.HasValue && IsOpDivisao.Value)
+            {
+                if (TipoItensExpressao.Any(x => x == TipoItemTs.NumeroInteiro))
+                {
+                    throw new CompiladorException(
+                        $"Não é possível realizar divisão de números inteiros\nLinha: {Tokens[IndexAtual].Linha}");
+                }
+            }
+            
             if (TipoItensExpressao.Any(x => x != firstTipoExpressao))
             {
                 throw new CompiladorException(

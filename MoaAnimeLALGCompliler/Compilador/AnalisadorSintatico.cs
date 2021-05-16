@@ -493,8 +493,47 @@ namespace Compilador
                     break;
 
                 case TipoToken.Identificador:
+
+                    var procedure = TabelaDeSimbolos.Find(Tokens[IndexAtual].Cadeia, EscopoStack.Peek(), true);
+                    bool isProcedure = procedure != null;
+
                     IndexAtual++;
                     RestoIdent();
+
+                    if (isProcedure)
+                    {
+                        //Validar argumentos procedure
+
+                        var i = IndexAtual;
+
+                        var tipoParametros = new List<TipoParametro>(); 
+                        
+                        while (Tokens[i].Tipo != TipoToken.SimboloAbreParenteses)
+                        {
+                            if (Tokens[i].Tipo == TipoToken.Identificador)
+                            {
+                                var parametro = TabelaDeSimbolos.Find(Tokens[i].Cadeia, EscopoStack.Peek());
+                                tipoParametros.Add(parametro.Tipo == TipoItemTs.NumeroInteiro
+                                    ? TipoParametro.NumeroInteiro
+                                    : TipoParametro.NumeroReal);
+                            }
+                            i--;
+                        }
+
+                        if (tipoParametros.Count != procedure.Parametros.Count)
+                        {
+                            throw new CompiladorException($"Quantidade errada de parametros\nLinha: {procedure.Linha}");
+                        }
+
+                        for (int j = 0; j < tipoParametros.Count-1; j++)
+                        {
+                            if (tipoParametros[j] != procedure.Parametros[j].Tipo)
+                            {
+                                throw new CompiladorException(
+                                    $"Parametro com tipo diferente do esperado, encontrou {tipoParametros[j].ToString()} mas esperava {procedure.Parametros[j].Tipo.ToString()}\nLinha: {procedure.Linha}");
+                            }
+                        }
+                    }
                     break;
 
                 default:
@@ -755,14 +794,23 @@ namespace Compilador
         private void AddParametrosNaProcedure(ItemTs procedure)
         {
             var i = IndexAtual-4;
+           
+            
             while (Tokens[i].Tipo != TipoToken.SimboloAbreParenteses)
             {
                 if (Tokens[i].Tipo == TipoToken.Identificador)
                 {
+                    var indexTipoParametro = i;
+                    
+                    while (Tokens[indexTipoParametro].Tipo != TipoToken.ReservadoInteger && Tokens[indexTipoParametro].Tipo != TipoToken.ReservadoReal)
+                    {
+                        indexTipoParametro++;
+                    }
+                    
                     procedure.Parametros.Add(new Parametro
                     {
                         Cadeia = Tokens[i].Cadeia,
-                        Tipo = Tokens[i + 2].Tipo == TipoToken.ReservadoInteger
+                        Tipo = Tokens[indexTipoParametro].Tipo == TipoToken.ReservadoInteger
                             ? TipoParametro.NumeroInteiro
                             : TipoParametro.NumeroReal
                     });

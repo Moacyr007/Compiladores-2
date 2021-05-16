@@ -14,9 +14,28 @@ namespace Compilador
         public Dictionary<string, ItemTs> Simbolos { get; set; }
 
 
-        public ItemTs Find(string cadeia, string escopo)
+        public ItemTs Find(string cadeia, string escopo, bool? isProcedure= null)
         {
-            return Simbolos[escopo+":"+cadeia];
+            try
+            {
+                if (isProcedure.HasValue)
+                {
+                    var simbolo = Simbolos[escopo+":"+cadeia];
+
+                    if (isProcedure.Value && simbolo.Tipo == TipoItemTs.Procedimento)
+                        return simbolo;
+
+                    if (!isProcedure.Value && simbolo.Tipo != TipoItemTs.Procedimento)
+                        return simbolo;
+
+                    return null;
+                }
+                return Simbolos[escopo+":"+cadeia];
+            }
+            catch (KeyNotFoundException e)
+            {
+                return null;
+            }
         }
 
         public void TryAddNewItem(ItemTs itemTs)

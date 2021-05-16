@@ -498,6 +498,11 @@ namespace Compilador
                     var procedure = TabelaDeSimbolos.Find(Tokens[IndexAtual].Cadeia, EscopoStack.Peek(), true);
                     bool isProcedure = procedure != null;
 
+                    if (procedure == null && TabelaDeSimbolos.Find(Tokens[IndexAtual].Cadeia, EscopoStack.Peek()) == null)
+                    {
+                        throw new CompiladorException($"Procedure {Tokens[IndexAtual].Cadeia} não declarada\nLinha: {Tokens[IndexAtual].Linha}");
+                    }
+                    
                     IndexAtual++;
                     RestoIdent();
 

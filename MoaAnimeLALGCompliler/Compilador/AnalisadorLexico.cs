@@ -31,7 +31,7 @@ namespace Compilador
             {"real", TipoToken.ReservadoReal},
             {"integer", TipoToken.ReservadoInteger},
             {"read", TipoToken.ReservadoRead},
-            {"white", TipoToken.ReservadoWrite},
+            {"write", TipoToken.ReservadoWrite},
         };
 
         public Dictionary<string, TipoToken> Operadores = new Dictionary<string, TipoToken>()

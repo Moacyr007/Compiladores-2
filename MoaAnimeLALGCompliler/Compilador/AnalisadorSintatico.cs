@@ -831,7 +831,7 @@ namespace Compilador
                 if (tipoParametros[j] != procedure.Parametros[j].Tipo)
                 {
                     throw new CompiladorException(
-                        $"Parametro com tipo diferente do esperado, encontrou {tipoParametros[j].ToString()} mas esperava {procedure.Parametros[j].Tipo.ToString()}\nLinha: {Tokens[IndexAtual].Linha}");
+                        $"Parametro com tipo diferente do esperado, encontrou {tipoParametros[j].ToString()} mas esperava {procedure.Parametros[j].Tipo.ToString()}\nLinha: {Tokens[i].Linha}");
                 }
             }
         }

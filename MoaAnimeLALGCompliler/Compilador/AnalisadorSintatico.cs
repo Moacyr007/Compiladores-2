@@ -502,37 +502,7 @@ namespace Compilador
 
                     if (isProcedure)
                     {
-                        //Validar argumentos procedure
-
-                        var i = IndexAtual;
-
-                        var tipoParametros = new List<TipoParametro>(); 
-                        
-                        while (Tokens[i].Tipo != TipoToken.SimboloAbreParenteses)
-                        {
-                            if (Tokens[i].Tipo == TipoToken.Identificador)
-                            {
-                                var parametro = TabelaDeSimbolos.Find(Tokens[i].Cadeia, EscopoStack.Peek());
-                                tipoParametros.Add(parametro.Tipo == TipoItemTs.NumeroInteiro
-                                    ? TipoParametro.NumeroInteiro
-                                    : TipoParametro.NumeroReal);
-                            }
-                            i--;
-                        }
-
-                        if (tipoParametros.Count != procedure.Parametros.Count)
-                        {
-                            throw new CompiladorException($"Quantidade errada de parametros\nLinha: {procedure.Linha}");
-                        }
-
-                        for (int j = 0; j < tipoParametros.Count-1; j++)
-                        {
-                            if (tipoParametros[j] != procedure.Parametros[j].Tipo)
-                            {
-                                throw new CompiladorException(
-                                    $"Parametro com tipo diferente do esperado, encontrou {tipoParametros[j].ToString()} mas esperava {procedure.Parametros[j].Tipo.ToString()}\nLinha: {procedure.Linha}");
-                            }
-                        }
+                        ValidarParametros(procedure);
                     }
                     break;
 
@@ -544,6 +514,7 @@ namespace Compilador
             CallStack.Pop();
         }
 
+        
         private void RestoIdent()
         {
             CallStack.Push(nameof(RestoIdent));
@@ -759,25 +730,33 @@ namespace Compilador
 
         private void ValidarTiposAtribuicao()
         {
-            TipoItemTs tipoSimbolo;
+            TipoItemTs tipoVar;
 
-            switch (Tokens[IndexAtual - 1].Tipo)
+            var indexAtribuicao = IndexAtual;
+            while (Tokens[indexAtribuicao].Tipo != TipoToken.SimboloAtribuicao)
+            {
+                indexAtribuicao--;
+            }
+
+            indexAtribuicao--;
+            
+            switch (Tokens[indexAtribuicao].Tipo)
             {
                 case TipoToken.Identificador:
-                    tipoSimbolo = TabelaDeSimbolos.Find(Tokens[IndexAtual - 1].Cadeia, EscopoStack.Peek()).Tipo;
+                    tipoVar = TabelaDeSimbolos.Find(Tokens[indexAtribuicao].Cadeia, EscopoStack.Peek()).Tipo;
                     break;
                 case TipoToken.NumeroReal:
-                    tipoSimbolo = TipoItemTs.NumeroReal;
+                    tipoVar = TipoItemTs.NumeroReal;
                     break;
                 default:
-                    tipoSimbolo = TipoItemTs.NumeroInteiro;
+                    tipoVar = TipoItemTs.NumeroInteiro;
                     break;
             }
 
-            if (TipoItensExpressao.Any(x => x != tipoSimbolo))
+            if (TipoItensExpressao.Any(x => x != tipoVar))
             {
                 throw new CompiladorException(
-                    $"Atribuição inválida, era esperado um valor do tipo {tipoSimbolo.ToString()}");
+                    $"Atribuição inválida, era esperado um valor do tipo {tipoVar.ToString()}\nLinha: {Tokens[indexAtribuicao].Linha}");
             }
         }
 
@@ -787,7 +766,7 @@ namespace Compilador
             if (TipoItensExpressao.Any(x => x != firstTipoExpressao))
             {
                 throw new CompiladorException(
-                    $"Não é possível comparar tipos diferentes\nLinha: {Tokens[IndexAtual].Linha}");
+                    $"Não é possível ter  tipos diferentes em uma expressão\nLinha: {Tokens[IndexAtual].Linha}");
             }
         }
         
@@ -819,6 +798,43 @@ namespace Compilador
                 i--;
             }
         }
+        
+        private void ValidarParametros(ItemTs procedure)
+        {
+            //Validar argumentos procedure
+
+            var i = IndexAtual;
+
+            var tipoParametros = new List<TipoParametro>();
+
+            while (Tokens[i].Tipo != TipoToken.SimboloAbreParenteses)
+            {
+                if (Tokens[i].Tipo == TipoToken.Identificador)
+                {
+                    var parametro = TabelaDeSimbolos.Find(Tokens[i].Cadeia, EscopoStack.Peek());
+                    tipoParametros.Add(parametro.Tipo == TipoItemTs.NumeroInteiro
+                        ? TipoParametro.NumeroInteiro
+                        : TipoParametro.NumeroReal);
+                }
+
+                i--;
+            }
+
+            if (tipoParametros.Count != procedure.Parametros.Count)
+            {
+                throw new CompiladorException($"Quantidade errada de parametros\nLinha: {Tokens[i].Linha}");
+            }
+
+            for (int j = 0; j < tipoParametros.Count - 1; j++)
+            {
+                if (tipoParametros[j] != procedure.Parametros[j].Tipo)
+                {
+                    throw new CompiladorException(
+                        $"Parametro com tipo diferente do esperado, encontrou {tipoParametros[j].ToString()} mas esperava {procedure.Parametros[j].Tipo.ToString()}\nLinha: {procedure.Linha}");
+                }
+            }
+        }
+
     }
     
     

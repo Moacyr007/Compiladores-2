@@ -10,5 +10,10 @@ namespace Testes
         {
           return File.ReadAllText("EntradaCorreta.txt");
         }
+        
+        public static string GetExemploIncorretoLalg()
+        {
+            return File.ReadAllText("EntradaIncorreta.txt");
+        }
     }
 }

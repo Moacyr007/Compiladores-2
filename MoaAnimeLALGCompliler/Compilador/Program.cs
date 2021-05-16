@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 
 namespace Compilador
 {
@@ -6,7 +7,12 @@ namespace Compilador
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            Console.WriteLine("Inicio");
+            var analisadorLexico = new AnalisadorLexico(File.ReadAllText("Entrada.txt"));
+            analisadorLexico.Analisar();
+            var analisadorSintatico = new AnalisadorSintatico(analisadorLexico.Tokens);
+            analisadorSintatico.Analisar();
+            Console.WriteLine("Acabou");
         }
     }
 }

@@ -9,7 +9,7 @@ namespace Compilador
         }
 
         public CompiladorException(string simbolo, int linha, string etapa) : base(
-            string.Format("{2}Simbolo inválido : {0} \n Linha: {1}", simbolo, linha, etapa))
+            string.Format("{2} | Simbolo inválido : {0} \n Linha: {1}", simbolo, linha, etapa))
         {
         }
 

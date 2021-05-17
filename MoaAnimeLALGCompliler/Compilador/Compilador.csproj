@@ -7,7 +7,7 @@
 
     <ItemGroup>
       <None Update="Entrada.txt">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </None>
     </ItemGroup>
 

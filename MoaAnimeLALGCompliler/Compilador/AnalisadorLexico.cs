@@ -146,8 +146,9 @@ namespace Compilador
         //Retorna uma lista com a entrada separada por ' ', semelhante a string.split mas também separa por '\n' incluindo o '\n' na lista
         public List<Token> SepararTokens(string entrada)
         {
+           
             List<Token> tokenList = new List<Token>();
-            var tamanhoEntrada = entrada.Length -1;
+            var tamanhoEntrada = entrada.Length;
             int linha = 1;
             string tokenAtualValor = "";
             bool lendoComentario = false;
@@ -155,6 +156,10 @@ namespace Compilador
             var i = 0;
             while(i < tamanhoEntrada)
             {
+                if (i > 780)
+                {
+                    var asdsa = 1;
+                }
                 if (i+1 < tamanhoEntrada && entrada[i] == '*' && entrada[i+1] == '/')
                 {
                     i+=2;
@@ -229,7 +234,7 @@ namespace Compilador
                 {
                     tokenAtualValor += entrada[i];
                     i++;
-                    while (char.IsLetter(entrada[i]) || char.IsNumber(entrada[i]))
+                    while (i < tamanhoEntrada && (char.IsLetter(entrada[i]) || char.IsNumber(entrada[i])))
                     {
                         tokenAtualValor += entrada[i];
                         i++;
@@ -245,17 +250,17 @@ namespace Compilador
                     tokenAtualValor += entrada[i];
                     i++;
                     
-                    while (char.IsNumber(entrada[i]))
+                    while (i < tamanhoEntrada && char.IsNumber(entrada[i]))
                     {
                         tokenAtualValor += entrada[i];
                         i++;
                     }
 
-                    if (entrada[i].ToString() == ".")
+                    if (i < tamanhoEntrada && entrada[i].ToString() == ".")
                     {
                         tokenAtualValor += entrada[i];
                         i++;
-                        while (char.IsNumber(entrada[i]))
+                        while (i < tamanhoEntrada && char.IsNumber(entrada[i]))
                         {
                             tokenAtualValor += entrada[i];
                             i++;

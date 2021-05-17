@@ -65,6 +65,11 @@ namespace Compilador
 
             Corpo();
 
+            if (!IndexInRange() || Tokens[IndexAtual].Tipo != TipoToken.SimboloPonto)
+            {
+                throw new CompiladorException($"Erro sintático: Faltando simbolo '.' no final do programa \n linha: {Tokens[IndexAtual-1].Linha}");
+            }
+            
             CallStack.Pop();
         }
 
@@ -80,6 +85,7 @@ namespace Compilador
 
             Comandos();
 
+            
             if (Tokens[IndexAtual].Tipo != TipoToken.ReservadoEnd)
                 ThrowCompiladorException(Tokens[IndexAtual]);
             IndexAtual++;

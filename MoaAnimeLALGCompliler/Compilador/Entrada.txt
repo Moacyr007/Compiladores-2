@@ -1,6 +1,6 @@
 ﻿program teste
 
-/* declaracao de variaveis */
+/* declaracao {asdas} de variaveis */
 var a,b,c: integer;
 var d,e,f: real;
 var g,h : integer;
@@ -43,4 +43,4 @@ d := e/f; {real}
 dois(h;d;h);
 um(f;e;g;h)         {real,real,inteiro,inteiro}
 {aqui termina o programa}
-end
+end.

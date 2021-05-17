@@ -156,12 +156,11 @@ namespace Compilador
             var i = 0;
             while(i < tamanhoEntrada)
             {
-                if (i > 780)
-                {
-                    var asdsa = 1;
-                }
                 if (i+1 < tamanhoEntrada && entrada[i] == '*' && entrada[i+1] == '/')
                 {
+                    if  (!lendoComentarioChaves && !lendoComentario)
+                        throw new CompiladorException($"Erro léxico: Identificador inválido: {entrada[i]} \n Linha: {linha}");
+
                     i+=2;
                     lendoComentario = false;
                     
@@ -170,6 +169,9 @@ namespace Compilador
                 
                 if (entrada[i] == '}')
                 {
+                    if (!lendoComentarioChaves && !lendoComentario)
+                        throw new CompiladorException($"Erro léxico: Identificador inválido: {entrada[i]} \n Linha: {linha}");
+                    
                     lendoComentarioChaves = false;
                     i++;
                     continue;
@@ -181,7 +183,7 @@ namespace Compilador
                     continue;
                 }
                 
-                if (i+1 < tamanhoEntrada && entrada[i] == '/' && entrada[i+1] == '*')
+                if (i+1 < tamanhoEntrada && entrada[i] == '/' && entrada[i+1] == '*' && !lendoComentarioChaves)
                 {
                     i+=2;
                     lendoComentario = true;   
@@ -189,7 +191,7 @@ namespace Compilador
                     continue;
                 }
                 
-                if (entrada[i] == '{')
+                if (entrada[i] == '{' && !lendoComentario)
                 {
                     i++;
                     lendoComentarioChaves = true;

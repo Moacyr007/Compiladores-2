@@ -7,7 +7,7 @@ namespace Compilador
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Inicio\nA eentrada será lida do aquivo Entrada.txt");
+            Console.WriteLine("Inicio\nA eentrada será lida do aquivo Entrada.txt\n");
             var analisadorLexico = new AnalisadorLexico(File.ReadAllText("Entrada.txt"));
             analisadorLexico.Analisar();
             Console.WriteLine("Analise léxica completa...");
@@ -28,10 +28,11 @@ namespace Compilador
                     {
                         Console.Write($" Cadea: {parametro.Cadeia} Tipo: {parametro.Tipo}");
                     }
+                    Console.Write("\n");
                 }
             }
 
-            Console.WriteLine("Acabou");
+            Console.WriteLine("\nAcabou");
         }
     }
 }

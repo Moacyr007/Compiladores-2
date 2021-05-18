@@ -59,7 +59,7 @@ namespace Compilador
             if (Tokens[IndexAtual].Tipo != TipoToken.Identificador)
                 ThrowCompiladorException(Tokens[IndexAtual]);
 
-            EscopoStack.Push($"Global: {Tokens[IndexAtual].Cadeia}");
+            EscopoStack.Push($"Global - {Tokens[IndexAtual].Cadeia}");
 
             IndexAtual++;
 

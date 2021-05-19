@@ -4,8 +4,14 @@ namespace Compilador
 {
     public class GeradorCodigoHipo
     {
-        public InstrucoesMaquinaHipo[] AreaDeCodigo { get; set; }
+        public IList<string> AreaDeCodigo { get; set; }
         public Stack<string> AreaDeDados { get; set; } //Também chamada de pinha D
+
+        public GeradorCodigoHipo()
+        {
+            AreaDeCodigo = new List<string>();
+            AreaDeDados = new Stack<string>();
+        }
     }
 
     public enum InstrucoesMaquinaHipo
@@ -37,8 +43,12 @@ namespace Compilador
 
         DSVI, //desvio incondicional para a instrução de endereço p
 
-        DSVF /*desvio condicional para a instrução de endereço p; 
+        DSVF, /*desvio condicional para a instrução de endereço p; 
                 - o desvio será executado caso a condição resultante seja falsa; 
                 - o valor da condição estará no topo*/
+        
+        LEIT,   //lê um dado de entrada para o topo da pilha
+        IMPR,   //imprime valor o valor do topo da pilha na saída
+        ALME,   //reserva m posições na pilha D; m depende do tipo da variável
     }
 }

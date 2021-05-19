@@ -10,6 +10,7 @@ namespace Compilador
         public int UltimoIdex { get; set; }
         public int IndexAtual { get; set; }
         public TabelaDeSimbolos TabelaDeSimbolos { get; set; }
+        public GeradorCodigoHipo GeradorCodigoHipo{ get; set; }
         public Stack<string> EscopoStack { get; set; }
         public Stack<string> CallStack { get; set; }
 
@@ -24,6 +25,7 @@ namespace Compilador
             EscopoStack = new Stack<string>();
             CallStack = new Stack<string>();
             TipoItensExpressao = new List<TipoItemTs>();
+            GeradorCodigoHipo = new GeradorCodigoHipo();
         }
 
         private void ThrowCompiladorException(Token token)
@@ -62,7 +64,8 @@ namespace Compilador
             EscopoStack.Push($"Global - {Tokens[IndexAtual].Cadeia}");
 
             IndexAtual++;
-
+            
+            GeradorCodigoHipo.AreaDeCodigo.Add(InstrucoesMaquinaHipo.INPP.ToString());
             Corpo();
 
             if (!IndexInRange() || Tokens[IndexAtual].Tipo != TipoToken.SimboloPonto)
@@ -70,6 +73,7 @@ namespace Compilador
                 throw new CompiladorException($"Erro sintático: Faltando simbolo '.' no final do programa \n linha: {Tokens[IndexAtual-1].Linha}");
             }
             
+            GeradorCodigoHipo.AreaDeCodigo.Add(InstrucoesMaquinaHipo.PARA.ToString());
             CallStack.Pop();
         }
 
@@ -441,6 +445,9 @@ namespace Compilador
                     else
                         ThrowCompiladorException(Tokens[IndexAtual]);
 
+                    GeradorCodigoHipo.AreaDeCodigo.Add(InstrucoesMaquinaHipo.LEIT.ToString());
+                    //Todo implementar endereço real dos items em AreaDeDados
+                    GeradorCodigoHipo.AreaDeCodigo.Add(InstrucoesMaquinaHipo.ARMZ +" "+ GeradorCodigoHipo.AreaDeDados.Count);
                     break;
 
                 case TipoToken.ReservadoWrite:
@@ -537,6 +544,8 @@ namespace Compilador
                 IndexAtual++;
                 Expressao();
                 ValidarTiposAtribuicao();
+                GeradorCodigoHipo.AreaDeCodigo.Add(InstrucoesMaquinaHipo.CRCT + "0");//TODO implementar método para obter valor da expressão
+                GeradorCodigoHipo.AreaDeCodigo.Add(InstrucoesMaquinaHipo.ARMZ +" "+ GeradorCodigoHipo.AreaDeDados.Count);//TODO implementar método para obter valor da expressão
             }
             else
             {
@@ -737,6 +746,8 @@ namespace Compilador
                     Cadeia = Tokens[IndexAtual].Cadeia, Escopo = EscopoStack.Peek(), Tipo = TipoItemTs.Desconhecido,
                     Linha = Tokens[IndexAtual].Linha
                 });
+                
+                GeradorCodigoHipo.AreaDeCodigo.Add(InstrucoesMaquinaHipo.ALME + " 1");
             }
             else
             {

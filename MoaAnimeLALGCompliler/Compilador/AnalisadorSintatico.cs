@@ -569,7 +569,7 @@ namespace Compilador
             if (tipoExpressao1 != tipoExpressao2)
             {
                 throw new CompiladorException(
-                    $"Não é possível comparar expressões de tipos diferentes\nLinha: {Tokens[IndexAtual].Linha}");
+                    $"Não é possível comparar expressões de tipos diferentes\nLinha: {Tokens[IndexAtual].Linha}\nOu outro erro em linha proxixa");
             }
 
             CallStack.Pop();

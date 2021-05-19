@@ -1,6 +1,6 @@
 ﻿program teste
 
-/* declaracao {asdas} de variaveis */
+/* declaracao de variaveis */
 var a,b,c: integer;
 var d,e,f: real;
 var g,h : integer;

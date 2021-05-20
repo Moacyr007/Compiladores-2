@@ -6,7 +6,11 @@ namespace Compilador
     {
         public IList<string> AreaDeCodigo { get; set; }
         public Stack<string> AreaDeDados { get; set; } //Também chamada de pinha D
-
+        
+        private struct ads
+        {
+            int a;
+        }
         public GeradorCodigoHipo()
         {
             AreaDeCodigo = new List<string>();

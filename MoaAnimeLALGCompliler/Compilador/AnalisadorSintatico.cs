@@ -468,7 +468,20 @@ namespace Compilador
 
                 case TipoToken.ReservadoWhile:
                     IndexAtual++;
+                    
                     Condicao();
+                    GeradorCodigoHipo.AreaDeCodigo.Add(InstrucoesMaquinaHipo.CRVL + " 1");
+                    GeradorCodigoHipo.AreaDeCodigo.Add(InstrucoesMaquinaHipo.CRVL + " 0");
+
+                    /*
+                    var i = IndexAtual;
+                    while (Tokens[i].Tipo != TipoToken.ReservadoWhile)
+                    {
+                        
+                        i--;
+                    }
+                    */
+                    
                     if (Tokens[IndexAtual].Tipo == TipoToken.ReservadoDo)
                     {
                         IndexAtual++;

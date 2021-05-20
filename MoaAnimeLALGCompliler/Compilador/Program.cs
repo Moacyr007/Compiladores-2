@@ -32,6 +32,12 @@ namespace Compilador
                 }
             }
 
+            Console.WriteLine("Código HIpo");
+            foreach (var item in analisadorSintatico.GeradorCodigoHipo.AreaDeCodigo)
+            {
+                Console.WriteLine(item);
+            }
+
             Console.WriteLine("\nAcabou");
         }
     }
